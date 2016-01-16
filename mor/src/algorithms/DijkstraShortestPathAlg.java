@@ -47,7 +47,7 @@ import model.abstracts.BaseGraph;
 import model.abstracts.BaseVertex;
 
 
-/** majo rama
+/**
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision: 430 $
  * @latest $Date: 2008-07-27 16:31:56 -0700 (Sun, 27 Jul 2008) $
