@@ -39,6 +39,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -83,6 +84,12 @@ public class Graph implements BaseGraph
 	// the number of arcs in the graph
 	protected int _edge_num = 0;
 	
+	// index for edge weights in the graph
+	/*protected Map<Pair<Integer, Integer>, Integer> _vertex_pair_mij_index = 
+			new HashMap<Pair<Integer,Integer>, Integer>();
+	*/
+	
+	
 	/**
 	 * Constructor 1 
 	 * @param data_file_name
@@ -126,6 +133,7 @@ public class Graph implements BaseGraph
 		_fanin_vertices_index.clear();
 		_fanout_vertices_index.clear();
 		_vertex_pair_weight_index.clear();
+	//	_vertex_pair_mij_index.clear();
 	}
 	
 	/**
@@ -169,6 +177,7 @@ public class Graph implements BaseGraph
 					for(int i=0; i<_vertex_num; ++i)
 					{
 						BaseVertex vertex = new Vertex();
+						vertex.set_terminales(false);
 						_vertex_list.add(vertex);
 						_id_vertex_index.put(vertex.get_id(), vertex);
 					}
@@ -237,6 +246,9 @@ public class Graph implements BaseGraph
 				new Pair<Integer, Integer>(start_vertex_id, end_vertex_id), 
 				weight);
 		
+		//Inicializo mij=3
+		/*_vertex_pair_mij_index.put(new Pair<Integer, Integer>(start_vertex_id, end_vertex_id), 
+				3);*/
 		++_edge_num;
 	}
 	
@@ -341,4 +353,156 @@ public class Graph implements BaseGraph
 	{
 		return _id_vertex_index.get(id);
 	}
+	
+	
+	public void set_vertex_to_graph(List<Integer> vertexs){
+		clear();
+		_vertex_num = vertexs.size();		
+		for (int id : vertexs){
+			BaseVertex vertex = new Vertex();
+			vertex.set_id(id);
+			vertex.set_terminales(true);
+			_vertex_list.add(vertex);
+			_id_vertex_index.put(vertex.get_id(), vertex);
+		}
+	}
+	
+	public int get_vertex_num(){
+		return _vertex_num;
+		
+	}
+
+	/*public Map<Pair<Integer, Integer>, Integer> get_vertex_pair_mij_index() {
+		return _vertex_pair_mij_index;
+	}
+	
+	public void decrement_mij (Pair<Integer, Integer> ij){
+		int old_mij = _vertex_pair_mij_index.get(ij);		
+		_vertex_pair_mij_index.put(ij, old_mij--);
+	}*/
+	
+	public Graph copy_of_graph (){
+		Graph copy = new Graph();
+		copy._vertex_num = _vertex_num;
+		copy._edge_num = _edge_num;
+		copy._vertex_list = new ArrayList<BaseVertex>(_vertex_list);
+		copy._fanin_vertices_index = new HashMap<Integer, Set<BaseVertex>>(_fanin_vertices_index);
+		copy._fanout_vertices_index = new HashMap<Integer, Set<BaseVertex>>(_fanout_vertices_index);
+		copy._id_vertex_index = new HashMap<Integer, BaseVertex>(_id_vertex_index);
+		copy._vertex_pair_weight_index = new HashMap<Pair<Integer,Integer>, Double>(_vertex_pair_weight_index);
+		
+		return copy;
+	}
+	
+	public Graph grafo_menos_camino (Path p){
+		Graph H = copy_of_graph();
+		List<BaseVertex> vertices_path = p._vertex_list;
+		if ((vertices_path!=null) && (vertices_path.size()>1)){
+			int aux = 0;
+			int i = 0;
+			int j = 0;
+			while (aux+1<vertices_path.size()){
+				i = vertices_path.get(aux).get_id();
+				j = vertices_path.get(aux+1).get_id();
+				H._edge_num = H._edge_num-1;
+				
+				Set<BaseVertex> set_in_i = H._fanin_vertices_index.get(i);
+				Set<BaseVertex> set_in_i_aux = new HashSet<BaseVertex>();
+				Set<BaseVertex> set_out_i_aux = new HashSet<BaseVertex>();
+				for (BaseVertex v : set_in_i){
+					if (v.get_id() != j){
+						set_in_i_aux.add(v);
+						set_out_i_aux.add(v);
+					}else{
+						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(i,v.get_id()));						
+						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(v.get_id(),i));
+					}						
+				}
+				H._fanin_vertices_index.put(i, set_in_i_aux);
+				H._fanout_vertices_index.put(i, set_out_i_aux);
+				
+				Set<BaseVertex> set_in_j = H._fanin_vertices_index.get(j);
+				Set<BaseVertex> set_in_j_aux = new HashSet<BaseVertex>();
+				Set<BaseVertex> set_out_j_aux = new HashSet<BaseVertex>();
+				for (BaseVertex v : set_in_j){
+					if (v.get_id() != i){
+						set_in_i_aux.add(v);
+						set_out_i_aux.add(v);
+					}else{
+						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(j,v.get_id()));
+						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(v.get_id(),j));
+					}						
+				}
+				H._fanin_vertices_index.put(j, set_in_j_aux);
+				H._fanout_vertices_index.put(j, set_out_j_aux);		
+				
+				aux++;					
+			}
+		}
+		return H;
+	}
+	
+	public Graph grafo_mas_camino (Path p, Graph g_original){
+		Graph H = copy_of_graph();
+		List<BaseVertex> vertices_path = p._vertex_list;
+		if ((vertices_path!=null) && (vertices_path.size()>1)){
+			int aux = 0;
+			int i = 0;
+			int j = 0;
+			while (aux+1<vertices_path.size()){
+				i = vertices_path.get(aux).get_id();
+				j = vertices_path.get(aux+1).get_id();
+				Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
+				Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
+				
+				Set<BaseVertex> set_in_i = H._fanin_vertices_index.get(i);
+				Set<BaseVertex> set_in_i_aux = new HashSet<BaseVertex>();
+				Set<BaseVertex> set_out_i_aux = new HashSet<BaseVertex>();
+				
+				if ((set_in_i==null)||(set_in_i.size()==0)){
+					set_in_i_aux.add(vertices_path.get(aux+1));
+					set_out_i_aux.add(vertices_path.get(aux));
+					double cost = g_original.get_edge_weight(vertices_path.get(aux), vertices_path.get(aux+1));
+					H._vertex_pair_weight_index.put(pair_ij , cost);
+					H._vertex_pair_weight_index.put(pair_ji , cost);
+					H._edge_num = H._edge_num+2;
+				}else {				
+					BaseVertex v_j = null;
+					boolean encontre_arista = false;
+					for (BaseVertex v : set_in_i){
+						if (v.get_id() == j){							
+							encontre_arista = true;
+						}
+						set_in_i_aux.add(v);						
+					}
+					
+					if (!encontre_arista){
+						set_in_i_aux.add(vertices_path.get(aux+1));
+						double cost = g_original.get_edge_weight(vertices_path.get(aux), vertices_path.get(aux+1));
+						H._vertex_pair_weight_index.put(pair_ij , cost);
+						H._vertex_pair_weight_index.put(pair_ji , cost);
+						H._edge_num = H._edge_num+2;
+					}				
+				}
+				aux ++;
+			}
+		}
+		return H;
+	}
+
+	public Map<Pair<Integer, Integer>, Double> get_vertex_pair_weight_index() {
+		return _vertex_pair_weight_index;
+	}
+
+	public void set_vertex_pair_weight_index(
+			Map<Pair<Integer, Integer>, Double> _vertex_pair_weight_index) {
+		this._vertex_pair_weight_index = _vertex_pair_weight_index;
+	}
+	
+	
+	
+	
 }
+
+
+
