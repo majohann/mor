@@ -49,7 +49,7 @@ import java.util.Vector;
 import model.abstracts.BaseGraph;
 import model.abstracts.BaseVertex;
 
-/**
+/** majo
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision: 783 $
  * @latest $Date: 2009-06-19 12:19:27 -0700 (Fri, 19 Jun 2009) $
