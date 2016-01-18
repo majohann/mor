@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
@@ -371,15 +372,6 @@ public class Graph implements BaseGraph
 		return _vertex_num;
 		
 	}
-
-	/*public Map<Pair<Integer, Integer>, Integer> get_vertex_pair_mij_index() {
-		return _vertex_pair_mij_index;
-	}
-	
-	public void decrement_mij (Pair<Integer, Integer> ij){
-		int old_mij = _vertex_pair_mij_index.get(ij);		
-		_vertex_pair_mij_index.put(ij, old_mij--);
-	}*/
 	
 	public Graph copy_of_graph (){
 		Graph copy = new Graph();
@@ -496,10 +488,18 @@ public class Graph implements BaseGraph
 
 	public void set_vertex_pair_weight_index(
 			Map<Pair<Integer, Integer>, Double> _vertex_pair_weight_index) {
-		this._vertex_pair_weight_index = _vertex_pair_weight_index;
+		this._vertex_pair_weight_index = new HashMap<Pair<Integer,Integer>, Double>(_vertex_pair_weight_index);
 	}
 	
-	
+	public boolean isGraphEdge (Pair<Integer,Integer> edge){		
+		for (Entry<Pair<Integer, Integer>, Double> entry : _vertex_pair_weight_index.entrySet()) {
+			Pair<Integer, Integer> pair = entry.getKey();
+		    if ((pair.first()==edge.first()) && (pair.second()==edge.second())){
+		    	return true;		    	
+		    }
+		}
+		return false;
+	}
 	
 	
 }
