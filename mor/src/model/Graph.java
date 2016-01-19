@@ -451,13 +451,17 @@ public class Graph implements BaseGraph
 				
 				//ME FIJO SI DEBO AGREGAR VÉRTICES NUEVOS A GSol
 				if (_id_vertex_index.get(i)==null){ //el vértice i no existe
-					_id_vertex_index.put(i, vertices_path.get(indice_lista));
-					_vertex_list.add(vertices_path.get(indice_lista));
+					BaseVertex v = vertices_path.get(indice_lista);
+					v.set_terminales(false);
+					_id_vertex_index.put(i, v);
+					_vertex_list.add(v);
 					_vertex_num++;
 				}				
 				if (_id_vertex_index.get(j)==null){ //el vértice j no existe
-					_id_vertex_index.put(j, vertices_path.get(indice_lista+1));
-					_vertex_list.add(vertices_path.get(indice_lista+1));
+					BaseVertex v = vertices_path.get(indice_lista+1);
+					v.set_terminales(false);
+					_id_vertex_index.put(j, v);
+					_vertex_list.add(v);
 					_vertex_num++;
 				}
 				
@@ -539,8 +543,6 @@ public class Graph implements BaseGraph
 	public void setNodos_terminales(List<Integer> nodos_terminales) {
 		this.nodos_terminales = nodos_terminales;
 	}
-	
-	
 	
 }
 
