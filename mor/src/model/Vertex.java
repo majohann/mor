@@ -42,7 +42,7 @@ public class Vertex implements BaseVertex, Comparable<Vertex>
 	private static int CURRENT_VERTEX_NUM = 0;
 	private int _id = CURRENT_VERTEX_NUM++;
 	private double _weight = 0;
-	private boolean terminales;
+	private boolean nodo_terminal;
 	
 	/**
 	 * 
@@ -71,14 +71,6 @@ public class Vertex implements BaseVertex, Comparable<Vertex>
 		_weight = status;
 	}
 	
-	public boolean isTerminales() {
-		return terminales;
-	}
-
-	public void set_terminales(boolean terminales) {
-		this.terminales = terminales;
-	}
-
 	public int compareTo(Vertex r_vertex)
 	{
 		double diff = this._weight - r_vertex._weight;
@@ -93,5 +85,15 @@ public class Vertex implements BaseVertex, Comparable<Vertex>
 	public static void reset()
 	{
 		CURRENT_VERTEX_NUM = 0;
+	}
+
+	@Override
+	public boolean isTerminalNode() {
+		return nodo_terminal;
+	}
+
+	@Override
+	public void set_terminales(boolean t) {
+		nodo_terminal = t;		
 	}
 }
