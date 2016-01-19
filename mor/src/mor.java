@@ -9,24 +9,25 @@ import algorithms.YenTopKShortestPathsAlg;
 import model.*;
 import model.abstracts.BaseVertex;
 
-
 public class mor {
 
 	public static void main(String[] args) {
 		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015");
 		
 		//Cargo grafo desde archivo
-		Graph G = new Graph("data/test_mor");
+		Graph G = new Graph("data/test_mor_2");
 		G.export_to_file("data/salidas/G_creado.txt");
 				
 		//Cargo nodos terminales (después deberíamos cargarlos desde un archivo)(por ahora harcodeado)
 		List<Integer> T = new ArrayList<Integer>();
 		T.add(0);
-		T.add(4);
+		T.add(3);
+		T.add(5);
 		
 		//al momento de cargar los T debo generar esto (por ahora harcodeado)
 		Map<Pair<Integer, Integer>, Integer> m_ij = new HashMap<Pair<Integer,Integer>, Integer>();
-		m_ij.put(new Pair<Integer, Integer>(0,4),3);
+		m_ij.put(new Pair<Integer, Integer>(0,3),3);
+		m_ij.put(new Pair<Integer, Integer>(3,5),3);
 		//m_ij.put(new Pair<Integer, Integer>(5,1),3);	
 		
 		//Creo Pij lista de caminos nodos-disjuntos
@@ -35,7 +36,6 @@ public class mor {
 		//Creo grafo Gsol cuyos nodos son los terminales y no tiene aristas		
 		Graph Gsol = new Graph();
 		Gsol.set_vertex_to_graph(T);	
-		//Gsol.export_to_file("data/salidas/Gsol_T.txt");
 		
 		//seleccionar randomicamente i,j in TxT /mij>0
 		Pair<Integer,Integer> random_ij = get_random_ij(m_ij,T,1);
@@ -65,38 +65,37 @@ public class mor {
 			List<Path> yens_path = yen.get_shortest_paths(H.get_vertex(random_ij.first()),H.get_vertex(random_ij.second()), 3);
 			
 			if ((yens_path!=null)&&(yens_path.size()>0)){
+				int min_size = Integer.MAX_VALUE;
+				Path shortest_path = null; 
 				
-				Path shortest_path = yens_path.get(0); //VERRRRRRRR
+				for (Path p : yens_path){
+					int p_size = p.get_vertices().size();
+					if (p_size<min_size){
+						min_size = p_size;
+						shortest_path = p;
+					}
+				}
+				
 				Vertex i = (Vertex) H.get_vertex(random_ij.first());
 				Vertex j = (Vertex) H.get_vertex(random_ij.second());
 				int old_mij = m_ij.get(new Pair<Integer,Integer>(i.get_id(),j.get_id()));
 				m_ij.put(new Pair<Integer,Integer>(i.get_id(),j.get_id()),old_mij-1);
 				if (shortest_path.get_weight()==0){
-					//int old_mij = m_ij.get(new Pair<Integer,Integer>(i.get_id(),j.get_id()));
-					//m_ij.put(new Pair<Integer,Integer>(i.get_id(),j.get_id()),old_mij-1);
 					Pij.add(shortest_path);					
 				}else{
-					Random randomizer = new Random();
-					//int old_mij = m_ij.get(new Pair<Integer,Integer>(i.get_id(),j.get_id()));
-					//m_ij.put(new Pair<Integer,Integer>(i.get_id(),j.get_id()),old_mij-1);
-					
+					Random randomizer = new Random();					
 					Path p_random = null;
 					if (yens_path.size()==1){
 						p_random = yens_path.get(0);
 					}else {
 						p_random = yens_path.get(randomizer.nextInt(yens_path.size()-1));
 					}
-					//i = (Vertex) p_random.get_vertices().get(0);
-					//j = (Vertex) p_random.get_vertices().get(p_random.get_vertices().size()-1);
-					//int old_mij = m_ij.get(new Pair<Integer,Integer>(i.get_id(),j.get_id()));
-					//m_ij.put(new Pair<Integer,Integer>(i.get_id(),j.get_id()),old_mij-1);
 					Pij.add(p_random);		
 					Gsol = Gsol.grafo_mas_camino(p_random, G);
 					Gsol.export_to_file("data/salidas/Gsol_iter_"+iter+".txt");
 				}
 			}	
 			
-			//Gsol.export_to_file("data/salidas/H_iter_"+iter+".txt");
 			iter++;
 			random_ij = get_random_ij(m_ij,T,1);
 		}
