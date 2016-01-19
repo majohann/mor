@@ -88,7 +88,11 @@ public class mor {
 				Vertex i = (Vertex) H.get_vertex(random_ij.first());
 				Vertex j = (Vertex) H.get_vertex(random_ij.second());
 				int old_mij = m_ij.get(new Pair<Integer,Integer>(i.get_id(),j.get_id()));
-				m_ij.put(new Pair<Integer,Integer>(i.get_id(),j.get_id()),old_mij-1);
+				if (old_mij-1 == 0){
+					m_ij.remove(new Pair<Integer,Integer>(i.get_id(),j.get_id()));
+				}else {
+					m_ij.put(new Pair<Integer,Integer>(i.get_id(),j.get_id()),old_mij-1);
+				}
 				if (shortest_path.get_weight()==0){
 					Pij.add(shortest_path);					
 				}else{
@@ -115,21 +119,7 @@ public class mor {
 	
 	private static Pair<Integer,Integer> get_random_ij (Map<Pair<Integer, Integer>, Integer> m_ij, List<Integer> T, int tipo_random){
 		if (tipo_random==0){
-			//selecciono par i,j in T que cumpla mij>0 totalmente random
-			Random randomizer = new Random();
-			int i = T.get(randomizer.nextInt(T.size()));
-			int j = -1;
-			while (j!=i){
-				j = T.get(randomizer.nextInt(T.size()));
-			}
-			
-			while (m_ij.get(new Pair<Integer, Integer>(i,j))<=0){
-				i = T.get(randomizer.nextInt(T.size()));
-				j = -1;
-				while (j!=i){
-					j = T.get(randomizer.nextInt(T.size()));
-				}
-			}
+		
 		}else if (tipo_random==1){
 			//selecciono primer par i,j in T que cumpla mij>0
 			for (Map.Entry<Pair<Integer, Integer>, Integer> entry : m_ij.entrySet()) {
