@@ -434,54 +434,91 @@ public class Graph implements BaseGraph
 		return H;
 	}
 	
-	public Graph grafo_mas_camino (Path p, Graph g_original){
-		Graph H = copy_of_graph();
+	
+	
+	
+	
+	
+	public Graph grafo_mas_camino (Path p, Graph G){
+		Graph Gsol = copy_of_graph();
 		List<BaseVertex> vertices_path = p._vertex_list;
 		if ((vertices_path!=null) && (vertices_path.size()>1)){
-			int aux = 0;
+			int indice_lista = 0;
 			int i = 0;
 			int j = 0;
-			while (aux+1<vertices_path.size()){
-				i = vertices_path.get(aux).get_id();
-				j = vertices_path.get(aux+1).get_id();
+			while (indice_lista+1<vertices_path.size()){
+				i = vertices_path.get(indice_lista).get_id();
+				j = vertices_path.get(indice_lista+1).get_id();
 				Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
 				Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
 				
-				Set<BaseVertex> set_in_i = H._fanin_vertices_index.get(i);
-				Set<BaseVertex> set_in_i_aux = new HashSet<BaseVertex>();
-				Set<BaseVertex> set_out_i_aux = new HashSet<BaseVertex>();
+				//AGREGAR NODOS ENTRANTES Y SALIENTES
 				
-				if ((set_in_i==null)||(set_in_i.size()==0)){
-					set_in_i_aux.add(vertices_path.get(aux+1));
-					set_out_i_aux.add(vertices_path.get(aux));
-					double cost = g_original.get_edge_weight(vertices_path.get(aux), vertices_path.get(aux+1));
-					H._vertex_pair_weight_index.put(pair_ij , cost);
-					H._vertex_pair_weight_index.put(pair_ji , cost);
-					H._edge_num = H._edge_num+2;
-				}else {				
-					BaseVertex v_j = null;
-					boolean encontre_arista = false;
-					for (BaseVertex v : set_in_i){
-						if (v.get_id() == j){							
-							encontre_arista = true;
-						}
-						set_in_i_aux.add(v);						
-					}
+				//agregar nodos entrantes y salientes a i
+				Set<BaseVertex> entrantes_i = Gsol._fanin_vertices_index.get(i);
+				Set<BaseVertex> saliente_i = Gsol._fanout_vertices_index.get(i);
+				
+				if (entrantes_i==null){ //Gsol es vacío
+					entrantes_i = new HashSet<BaseVertex>();			
 					
-					if (!encontre_arista){
-						set_in_i_aux.add(vertices_path.get(aux+1));
-						double cost = g_original.get_edge_weight(vertices_path.get(aux), vertices_path.get(aux+1));
-						H._vertex_pair_weight_index.put(pair_ij , cost);
-						H._vertex_pair_weight_index.put(pair_ji , cost);
-						H._edge_num = H._edge_num+2;
-					}				
+					//nuestro grafo no es dirigido por lo cual entrantes_i = salientes_i
+					saliente_i = new HashSet<BaseVertex>();
 				}
-				aux ++;
+				
+				//agregar nodos entrantes y salientes a j
+				Set<BaseVertex> entrantes_j = Gsol._fanin_vertices_index.get(j);
+				Set<BaseVertex> saliente_j = Gsol._fanout_vertices_index.get(j);
+				if (entrantes_j==null){ //Gsol es vacío
+					entrantes_j = new HashSet<BaseVertex>();			
+					
+					//nuestro grafo no es dirigido por lo cual entrantes_i = salientes_i
+					saliente_j = new HashSet<BaseVertex>();				
+				}
+				
+				if (!entrantes_i.contains(vertices_path.get(indice_lista+1))){
+					entrantes_i.add(vertices_path.get(indice_lista+1)); //agrego vertice j
+					saliente_i.add(vertices_path.get(indice_lista+1)); //agrego vertice j
+					Gsol._fanin_vertices_index.put(i, entrantes_i);
+					Gsol._fanout_vertices_index.put(i, saliente_i);
+					
+					entrantes_j.add(vertices_path.get(indice_lista)); //agrego vertice i
+					saliente_j.add(vertices_path.get(indice_lista)); //agrego vertice i
+					Gsol._fanin_vertices_index.put(j, entrantes_j);
+					Gsol._fanout_vertices_index.put(j, saliente_j);
+					
+					Gsol._edge_num = Gsol._edge_num + 2;
+				}						
+				
+				//AGREGAR COSTOS
+				double cost = G.get_edge_weight(vertices_path.get(indice_lista), vertices_path.get(indice_lista+1));
+				Gsol._vertex_pair_weight_index.put(pair_ij , cost);
+				Gsol._vertex_pair_weight_index.put(pair_ji , cost);
+				
+				
+				indice_lista ++;
 			}
 		}
-		return H;
+		return Gsol;
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public Map<Pair<Integer, Integer>, Double> get_vertex_pair_weight_index() {
 		return _vertex_pair_weight_index;
 	}
@@ -503,6 +540,7 @@ public class Graph implements BaseGraph
 	
 	
 }
+
 
 
 
