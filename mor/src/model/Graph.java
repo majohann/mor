@@ -450,19 +450,19 @@ public class Graph implements BaseGraph
 				j = vertices_path.get(indice_lista+1).get_id();
 				
 				//ME FIJO SI DEBO AGREGAR VÉRTICES NUEVOS A GSol
-				if (_id_vertex_index.get(i)==null){ //el vértice i no existe
+				if (Gsol._id_vertex_index.get(i)==null){ //el vértice i no existe
 					BaseVertex v = vertices_path.get(indice_lista);
 					v.set_terminales(false);
-					_id_vertex_index.put(i, v);
-					_vertex_list.add(v);
-					_vertex_num++;
+					Gsol._id_vertex_index.put(i, v);
+					Gsol._vertex_list.add(v);
+					Gsol._vertex_num++;
 				}				
-				if (_id_vertex_index.get(j)==null){ //el vértice j no existe
+				if (Gsol._id_vertex_index.get(j)==null){ //el vértice j no existe
 					BaseVertex v = vertices_path.get(indice_lista+1);
 					v.set_terminales(false);
-					_id_vertex_index.put(j, v);
-					_vertex_list.add(v);
-					_vertex_num++;
+					Gsol._id_vertex_index.put(j, v);
+					Gsol._vertex_list.add(v);
+					Gsol._vertex_num++;
 				}
 				
 				
