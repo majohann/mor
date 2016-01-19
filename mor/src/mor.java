@@ -34,9 +34,10 @@ public class mor {
 		//al momento de cargar los T debo generar esto (por ahora harcodeado)
 		Map<Pair<Integer, Integer>, Integer> m_ij = new HashMap<Pair<Integer,Integer>, Integer>();
 		int indice_lista = 0;
-		while (indice_lista+1<T.size()){
-			m_ij.put(new Pair<Integer, Integer>(T.get(indice_lista),T.get(indice_lista+1)),3);
-			indice_lista++;
+		for (int i = 0; i<T.size(); i++){
+			for (int j = i+1; j<T.size(); j++){
+				m_ij.put(new Pair<Integer, Integer>(T.get(i),T.get(j)),3);			
+			}
 		}
 				
 		//Creo Pij lista de caminos nodos-disjuntos
