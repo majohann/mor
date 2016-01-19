@@ -19,17 +19,16 @@ public class mor {
 		G.export_to_file("data/salidas/G_creado.txt");
 				
 		//Cargo nodos terminales (después deberíamos cargarlos desde un archivo)(por ahora harcodeado)
-		List<Integer> T = new ArrayList<Integer>();
-		T.add(0);
-		T.add(3);
-		T.add(5);
+		List<Integer> T = G.getNodos_terminales();
 		
 		//al momento de cargar los T debo generar esto (por ahora harcodeado)
 		Map<Pair<Integer, Integer>, Integer> m_ij = new HashMap<Pair<Integer,Integer>, Integer>();
-		m_ij.put(new Pair<Integer, Integer>(0,3),3);
-		m_ij.put(new Pair<Integer, Integer>(3,5),3);
-		//m_ij.put(new Pair<Integer, Integer>(5,1),3);	
-		
+		int indice_lista = 0;
+		while (indice_lista+1<T.size()){
+			m_ij.put(new Pair<Integer, Integer>(T.get(indice_lista),T.get(indice_lista+1)),3);
+			indice_lista++;
+		}
+				
 		//Creo Pij lista de caminos nodos-disjuntos
 		List<Path> Pij = new ArrayList<Path>();
 		
