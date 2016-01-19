@@ -12,12 +12,22 @@ import model.abstracts.BaseVertex;
 public class mor {
 
 	public static void main(String[] args) {
-		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015");
+		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
 		
+		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
 		Graph G = new Graph("data/test_mor_2");
 		G.export_to_file("data/salidas/G_creado.txt");
 				
+		System.out.println("Construyo solución inicial...");
+		Graph Gsol = construir_solucion_inicial(G); 
+		
+		System.out.println("Fin.");
+		
+	}
+	
+	
+	private static Graph construir_solucion_inicial (Graph G){
 		//Cargo nodos terminales (después deberíamos cargarlos desde un archivo)(por ahora harcodeado)
 		List<Integer> T = G.getNodos_terminales();
 		
@@ -100,11 +110,8 @@ public class mor {
 		}
 		
 		Gsol.export_to_file("data/salidas/G_solucion.txt");
-		
-		System.out.println("Fin.");
-		
+		return Gsol;
 	}
-	
 	
 	private static Pair<Integer,Integer> get_random_ij (Map<Pair<Integer, Integer>, Integer> m_ij, List<Integer> T, int tipo_random){
 		if (tipo_random==0){
