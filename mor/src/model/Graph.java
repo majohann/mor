@@ -393,45 +393,37 @@ public class Graph implements BaseGraph
 		Graph H = copy_of_graph();
 		List<BaseVertex> vertices_path = p._vertex_list;
 		if ((vertices_path!=null) && (vertices_path.size()>1)){
-			int aux = 0;
+			int indice_lista = 0;
 			int i = 0;
 			int j = 0;
-			while (aux+1<vertices_path.size()){
-				i = vertices_path.get(aux).get_id();
-				j = vertices_path.get(aux+1).get_id();
-				H._edge_num = H._edge_num-1;
+			while (indice_lista+1<vertices_path.size()){
+				i = vertices_path.get(indice_lista).get_id();
+				j = vertices_path.get(indice_lista+1).get_id();
 				
-				Set<BaseVertex> set_in_i = H._fanin_vertices_index.get(i);
-				Set<BaseVertex> set_in_i_aux = new HashSet<BaseVertex>();
-				Set<BaseVertex> set_out_i_aux = new HashSet<BaseVertex>();
-				for (BaseVertex v : set_in_i){
-					if (v.get_id() != j){
-						set_in_i_aux.add(v);
-						set_out_i_aux.add(v);
-					}else{
-						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(i,v.get_id()));						
-						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(v.get_id(),i));
-					}						
-				}
-				H._fanin_vertices_index.put(i, set_in_i_aux);
-				H._fanout_vertices_index.put(i, set_out_i_aux);
+				//elimino el j de los vertices salientes y entrantes de i
+				Set<BaseVertex> entrantes_i = H._fanin_vertices_index.get(i);
+				Set<BaseVertex> salientes_i = H._fanin_vertices_index.get(i);
 				
-				Set<BaseVertex> set_in_j = H._fanin_vertices_index.get(j);
-				Set<BaseVertex> set_in_j_aux = new HashSet<BaseVertex>();
-				Set<BaseVertex> set_out_j_aux = new HashSet<BaseVertex>();
-				for (BaseVertex v : set_in_j){
-					if (v.get_id() != i){
-						set_in_i_aux.add(v);
-						set_out_i_aux.add(v);
-					}else{
-						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(j,v.get_id()));
-						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(v.get_id(),j));
-					}						
-				}
-				H._fanin_vertices_index.put(j, set_in_j_aux);
-				H._fanout_vertices_index.put(j, set_out_j_aux);		
+				BaseVertex vertex_j = vertices_path.get(indice_lista+1);
+				entrantes_i.remove(vertex_j);
+				salientes_i.remove(vertex_j);
 				
-				aux++;					
+				H._fanin_vertices_index.put(i, entrantes_i);
+				H._fanout_vertices_index.put(i, salientes_i);
+				
+				//elimino el j de los vertices salientes y entrantes de i
+				Set<BaseVertex> entrantes_j = H._fanin_vertices_index.get(j);
+				Set<BaseVertex> salientes_j = H._fanin_vertices_index.get(j);
+				
+				BaseVertex vertex_i = vertices_path.get(indice_lista);
+				entrantes_j.remove(vertex_i);
+				salientes_j.remove(vertex_i);
+				
+				H._edge_num = H._edge_num -2;
+								
+				H._fanin_vertices_index.put(j, entrantes_j);
+				H._fanout_vertices_index.put(j, salientes_j);
+				indice_lista++;			
 			}
 		}
 		return H;
@@ -545,6 +537,7 @@ public class Graph implements BaseGraph
 	}
 	
 }
+
 
 
 
