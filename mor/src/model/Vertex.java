@@ -42,6 +42,7 @@ public class Vertex implements BaseVertex, Comparable<Vertex>
 	private static int CURRENT_VERTEX_NUM = 0;
 	private int _id = CURRENT_VERTEX_NUM++;
 	private double _weight = 0;
+	private boolean nodo_terminal;
 	
 	/**
 	 * 
@@ -49,6 +50,10 @@ public class Vertex implements BaseVertex, Comparable<Vertex>
 	public int get_id()
 	{
 		return _id;
+	}
+	
+	public void set_id(int id){
+		_id = id;
 	}
 
 	public String toString()
@@ -80,5 +85,15 @@ public class Vertex implements BaseVertex, Comparable<Vertex>
 	public static void reset()
 	{
 		CURRENT_VERTEX_NUM = 0;
+	}
+
+	@Override
+	public boolean isTerminalNode() {
+		return nodo_terminal;
+	}
+
+	@Override
+	public void set_terminales(boolean t) {
+		nodo_terminal = t;		
 	}
 }
