@@ -85,11 +85,8 @@ public class Graph implements BaseGraph
 	// the number of arcs in the graph
 	protected int _edge_num = 0;
 	
-	// index for edge weights in the graph
-	/*protected Map<Pair<Integer, Integer>, Integer> _vertex_pair_mij_index = 
-			new HashMap<Pair<Integer,Integer>, Integer>();
-	*/
-	
+	// nodos terminales de la solución
+	private List<Integer> nodos_terminales = new ArrayList<Integer>();	
 	
 	/**
 	 * Constructor 1 
@@ -187,11 +184,17 @@ public class Graph implements BaseGraph
 				{
 					//2.2.2 find a new edge and put it in the graph  
 					String[] str_list = line.trim().split("\\s");
-					
-					int start_vertex_id = Integer.parseInt(str_list[0]);
-					int end_vertex_id = Integer.parseInt(str_list[1]);
-					double weight = Double.parseDouble(str_list[2]);
-					add_edge(start_vertex_id, end_vertex_id, weight);
+					try {
+						int start_vertex_id = Integer.parseInt(str_list[0]);
+						int end_vertex_id = Integer.parseInt(str_list[1]);
+						double weight = Double.parseDouble(str_list[2]);
+						add_edge(start_vertex_id, end_vertex_id, weight);
+					} catch (NumberFormatException e){
+						//encontro a los terminales
+						for (int i = 1; i<str_list.length; i++){
+							nodos_terminales.add(Integer.parseInt(str_list[i]));
+						}
+					}
 				}
 				//
 				line = bufRead.readLine();
@@ -387,51 +390,52 @@ public class Graph implements BaseGraph
 	}
 	
 	public Graph grafo_menos_camino (Path p){
-		Graph G = copy_of_graph();
+		Graph H = copy_of_graph();
 		List<BaseVertex> vertices_path = p._vertex_list;
 		if ((vertices_path!=null) && (vertices_path.size()>1)){
-			int indice_lista = 0;
+			int aux = 0;
 			int i = 0;
 			int j = 0;
-			while (indice_lista+1<vertices_path.size()){
-				i = vertices_path.get(indice_lista).get_id();
-				j = vertices_path.get(indice_lista+1).get_id();
-				G._edge_num = G._edge_num-2;
+			while (aux+1<vertices_path.size()){
+				i = vertices_path.get(aux).get_id();
+				j = vertices_path.get(aux+1).get_id();
+				H._edge_num = H._edge_num-1;
 				
-				Set<BaseVertex> entrantes_i = G._fanin_vertices_index.get(i);
-				Set<BaseVertex> salientes_i = G._fanout_vertices_index.get(i);
-				
-				if ((entrantes_i!=null) && (entrantes_i.size()>0)){
-					G._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(i,j));											
-					
-					entrantes_i.remove(vertices_path.get(indice_lista+1));
-					salientes_i.remove(vertices_path.get(indice_lista+1));
-					
-					G._fanin_vertices_index.put(i, entrantes_i);
-					G._fanout_vertices_index.put(i, salientes_i);
+				Set<BaseVertex> set_in_i = H._fanin_vertices_index.get(i);
+				Set<BaseVertex> set_in_i_aux = new HashSet<BaseVertex>();
+				Set<BaseVertex> set_out_i_aux = new HashSet<BaseVertex>();
+				for (BaseVertex v : set_in_i){
+					if (v.get_id() != j){
+						set_in_i_aux.add(v);
+						set_out_i_aux.add(v);
+					}else{
+						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(i,v.get_id()));						
+						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(v.get_id(),i));
+					}						
 				}
+				H._fanin_vertices_index.put(i, set_in_i_aux);
+				H._fanout_vertices_index.put(i, set_out_i_aux);
 				
-				Set<BaseVertex> entrantes_j = G._fanin_vertices_index.get(j);
-				Set<BaseVertex> salientes_j = G._fanout_vertices_index.get(j);
+				Set<BaseVertex> set_in_j = H._fanin_vertices_index.get(j);
+				Set<BaseVertex> set_in_j_aux = new HashSet<BaseVertex>();
+				Set<BaseVertex> set_out_j_aux = new HashSet<BaseVertex>();
+				for (BaseVertex v : set_in_j){
+					if (v.get_id() != i){
+						set_in_i_aux.add(v);
+						set_out_i_aux.add(v);
+					}else{
+						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(j,v.get_id()));
+						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(v.get_id(),j));
+					}						
+				}
+				H._fanin_vertices_index.put(j, set_in_j_aux);
+				H._fanout_vertices_index.put(j, set_out_j_aux);		
 				
-				if ((entrantes_j!=null) && (entrantes_j.size()>0)){
-					G._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(j,i));
-					
-					entrantes_j.remove(vertices_path.get(indice_lista));
-					salientes_j.remove(vertices_path.get(indice_lista));
-					
-					G._fanin_vertices_index.put(j, entrantes_j);
-					G._fanout_vertices_index.put(j, salientes_j);
-				}				
-				indice_lista++;					
+				aux++;					
 			}
 		}
-		return G;
+		return H;
 	}
-	
-	
-	
-	
 	
 	
 	public Graph grafo_mas_camino (Path p, Graph G){
@@ -527,6 +531,15 @@ public class Graph implements BaseGraph
 		}
 		return false;
 	}
+
+	public List<Integer> getNodos_terminales() {
+		return nodos_terminales;
+	}
+
+	public void setNodos_terminales(List<Integer> nodos_terminales) {
+		this.nodos_terminales = nodos_terminales;
+	}
+	
 	
 	
 }
