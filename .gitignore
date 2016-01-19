@@ -9,7 +9,7 @@ local.properties
 .settings/
 .loadpath
 
-# Eclipse Core
+# Eclipse Core 1
 .project
 
 # External tool builders
