@@ -16,7 +16,7 @@ public class mor {
 		
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
-		Graph G = new Graph("data/test_mor_2");
+		Graph G = new Graph("data/test_mor");
 		G.export_to_file("data/salidas/G_creado.txt");
 				
 		System.out.println("Construyo solución inicial...");
@@ -33,7 +33,7 @@ public class mor {
 		
 		//al momento de cargar los T debo generar esto (por ahora harcodeado)
 		Map<Pair<Integer, Integer>, Integer> m_ij = new HashMap<Pair<Integer,Integer>, Integer>();
-		int indice_lista = 0;
+				
 		for (int i = 0; i<T.size(); i++){
 			for (int j = i+1; j<T.size(); j++){
 				m_ij.put(new Pair<Integer, Integer>(T.get(i),T.get(j)),3);			
@@ -49,8 +49,7 @@ public class mor {
 		
 		//seleccionar randomicamente i,j in TxT /mij>0
 		Pair<Integer,Integer> random_ij = get_random_ij(m_ij,T,1);
-		
-		Map<Pair<Integer, Integer>, Double> costo_techo = new HashMap<Pair<Integer,Integer>, Double>();
+			
 		Graph H = G.copy_of_graph();
 		H.export_to_file("data/salidas/H_G_copy.txt");
 		int iter = 0;
@@ -58,7 +57,9 @@ public class mor {
 			for (Path p : Pij){
 				H = H.grafo_menos_camino(p);
 			}
-
+			
+			H.export_to_file("data/salidas/H_menos_camino_"+iter+".txt");
+			
 			Map<Pair<Integer, Integer>, Double> cost_techo = G.get_vertex_pair_weight_index();
 			Map<Pair<Integer, Integer>, Double> Gsol_edges_cost = Gsol.get_vertex_pair_weight_index();
 			if (Gsol_edges_cost==null)
