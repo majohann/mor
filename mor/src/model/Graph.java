@@ -387,51 +387,46 @@ public class Graph implements BaseGraph
 	}
 	
 	public Graph grafo_menos_camino (Path p){
-		Graph H = copy_of_graph();
+		Graph G = copy_of_graph();
 		List<BaseVertex> vertices_path = p._vertex_list;
 		if ((vertices_path!=null) && (vertices_path.size()>1)){
-			int aux = 0;
+			int indice_lista = 0;
 			int i = 0;
 			int j = 0;
-			while (aux+1<vertices_path.size()){
-				i = vertices_path.get(aux).get_id();
-				j = vertices_path.get(aux+1).get_id();
-				H._edge_num = H._edge_num-1;
+			while (indice_lista+1<vertices_path.size()){
+				i = vertices_path.get(indice_lista).get_id();
+				j = vertices_path.get(indice_lista+1).get_id();
+				G._edge_num = G._edge_num-2;
 				
-				Set<BaseVertex> set_in_i = H._fanin_vertices_index.get(i);
-				Set<BaseVertex> set_in_i_aux = new HashSet<BaseVertex>();
-				Set<BaseVertex> set_out_i_aux = new HashSet<BaseVertex>();
-				for (BaseVertex v : set_in_i){
-					if (v.get_id() != j){
-						set_in_i_aux.add(v);
-						set_out_i_aux.add(v);
-					}else{
-						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(i,v.get_id()));						
-						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(v.get_id(),i));
-					}						
+				Set<BaseVertex> entrantes_i = G._fanin_vertices_index.get(i);
+				Set<BaseVertex> salientes_i = G._fanout_vertices_index.get(i);
+				
+				if ((entrantes_i!=null) && (entrantes_i.size()>0)){
+					G._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(i,j));											
+					
+					entrantes_i.remove(vertices_path.get(indice_lista+1));
+					salientes_i.remove(vertices_path.get(indice_lista+1));
+					
+					G._fanin_vertices_index.put(i, entrantes_i);
+					G._fanout_vertices_index.put(i, salientes_i);
 				}
-				H._fanin_vertices_index.put(i, set_in_i_aux);
-				H._fanout_vertices_index.put(i, set_out_i_aux);
 				
-				Set<BaseVertex> set_in_j = H._fanin_vertices_index.get(j);
-				Set<BaseVertex> set_in_j_aux = new HashSet<BaseVertex>();
-				Set<BaseVertex> set_out_j_aux = new HashSet<BaseVertex>();
-				for (BaseVertex v : set_in_j){
-					if (v.get_id() != i){
-						set_in_i_aux.add(v);
-						set_out_i_aux.add(v);
-					}else{
-						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(j,v.get_id()));
-						H._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(v.get_id(),j));
-					}						
-				}
-				H._fanin_vertices_index.put(j, set_in_j_aux);
-				H._fanout_vertices_index.put(j, set_out_j_aux);		
+				Set<BaseVertex> entrantes_j = G._fanin_vertices_index.get(j);
+				Set<BaseVertex> salientes_j = G._fanout_vertices_index.get(j);
 				
-				aux++;					
+				if ((entrantes_j!=null) && (entrantes_j.size()>0)){
+					G._vertex_pair_weight_index.remove(new Pair<Integer,Integer>(j,i));
+					
+					entrantes_j.remove(vertices_path.get(indice_lista));
+					salientes_j.remove(vertices_path.get(indice_lista));
+					
+					G._fanin_vertices_index.put(j, entrantes_j);
+					G._fanout_vertices_index.put(j, salientes_j);
+				}				
+				indice_lista++;					
 			}
 		}
-		return H;
+		return G;
 	}
 	
 	
@@ -449,11 +444,21 @@ public class Graph implements BaseGraph
 			while (indice_lista+1<vertices_path.size()){
 				i = vertices_path.get(indice_lista).get_id();
 				j = vertices_path.get(indice_lista+1).get_id();
-				Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
-				Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
 				
-				//AGREGAR NODOS ENTRANTES Y SALIENTES
+				//ME FIJO SI DEBO AGREGAR VÉRTICES NUEVOS A GSol
+				if (_id_vertex_index.get(i)==null){ //el vértice i no existe
+					_id_vertex_index.put(i, vertices_path.get(indice_lista));
+					_vertex_list.add(vertices_path.get(indice_lista));
+					_vertex_num++;
+				}				
+				if (_id_vertex_index.get(j)==null){ //el vértice j no existe
+					_id_vertex_index.put(j, vertices_path.get(indice_lista+1));
+					_vertex_list.add(vertices_path.get(indice_lista+1));
+					_vertex_num++;
+				}
 				
+				
+				//AGREGAR NODOS ENTRANTES Y SALIENTES				
 				//agregar nodos entrantes y salientes a i
 				Set<BaseVertex> entrantes_i = Gsol._fanin_vertices_index.get(i);
 				Set<BaseVertex> saliente_i = Gsol._fanout_vertices_index.get(i);
@@ -490,6 +495,8 @@ public class Graph implements BaseGraph
 				}						
 				
 				//AGREGAR COSTOS
+				Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
+				Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
 				double cost = G.get_edge_weight(vertices_path.get(indice_lista), vertices_path.get(indice_lista+1));
 				Gsol._vertex_pair_weight_index.put(pair_ij , cost);
 				Gsol._vertex_pair_weight_index.put(pair_ji , cost);
@@ -501,24 +508,7 @@ public class Graph implements BaseGraph
 		return Gsol;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	public Map<Pair<Integer, Integer>, Double> get_vertex_pair_weight_index() {
 		return _vertex_pair_weight_index;
 	}
