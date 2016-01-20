@@ -425,6 +425,13 @@ public class Graph implements BaseGraph
 				H._fanout_vertices_index.put(j, salientes_j);
 				indice_lista++;			
 			}
+			
+			//AGREGAR COSTOS
+			Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
+			Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
+			H._vertex_pair_weight_index.remove(pair_ij);
+			H._vertex_pair_weight_index.remove(pair_ji);
+			
 		}
 		return H;
 	}
