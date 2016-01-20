@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 
 import algorithms.YenTopKShortestPathsAlg;
 import model.*;
-import model.abstracts.BaseVertex;
 
 public class mor {
 
@@ -48,7 +47,7 @@ public class mor {
 		Gsol.set_vertex_to_graph(T);	
 		
 		//seleccionar randomicamente i,j in TxT /mij>0
-		Pair<Integer,Integer> random_ij = get_random_ij(m_ij,T,1);
+		Pair<Integer,Integer> random_ij = get_random_ij(m_ij,T);
 			
 		Graph H = G.copy_of_graph();
 		H.export_to_file("data/salidas/H_G_copy.txt");
@@ -58,7 +57,7 @@ public class mor {
 				H = H.grafo_menos_camino(p);
 			}
 			
-			H.export_to_file("data/salidas/H_menos_camino_"+iter+".txt");
+			//H.export_to_file("data/salidas/H_menos_camino_"+iter+".txt");
 			
 			Map<Pair<Integer, Integer>, Double> cost_techo = G.get_vertex_pair_weight_index();
 			Map<Pair<Integer, Integer>, Double> Gsol_edges_cost = Gsol.get_vertex_pair_weight_index();
@@ -103,37 +102,39 @@ public class mor {
 					if (yens_path.size()==1){
 						p_random = yens_path.get(0);
 					}else {
-						p_random = yens_path.get(randomizer.nextInt(yens_path.size()-1));
+						p_random = yens_path.get(randomizer.nextInt(yens_path.size()));
 					}
 					Pij.add(p_random);		
 					Gsol = Gsol.grafo_mas_camino(p_random, G);
-					Gsol.export_to_file("data/salidas/Gsol_iter_"+iter+".txt");
+					//Gsol.export_to_file("data/salidas/Gsol_iter_"+iter+".txt");
 				}
 			}	
 			
 			iter++;
-			random_ij = get_random_ij(m_ij,T,1);
+			random_ij = get_random_ij(m_ij,T);
 		}
 		
 		Gsol.export_to_file("data/salidas/G_solucion.txt");
 		return Gsol;
 	}
 	
-	private static Pair<Integer,Integer> get_random_ij (Map<Pair<Integer, Integer>, Integer> m_ij, List<Integer> T, int tipo_random){
-		if (tipo_random==0){
-		
-		}else if (tipo_random==1){
-			//selecciono primer par i,j in T que cumpla mij>0
-			for (Map.Entry<Pair<Integer, Integer>, Integer> entry : m_ij.entrySet()) {
-				Pair<Integer, Integer> pair = entry.getKey();
-			    int value = entry.getValue();			    
-			    if (value>0){
-			    	return pair;
-			    }
+	private static Pair<Integer,Integer> get_random_ij (Map<Pair<Integer, Integer>, Integer> m_ij, List<Integer> T){		
+		//selecciono primer par i,j in T que cumpla mij>0
+		if ((m_ij != null) && (m_ij.size()>0)){
+			Random randomizer = new Random();					
+			
+			int mij_size = m_ij.size();
+			Pair<Integer, Integer> pair = null;
+			List<Pair<Integer, Integer>> lista_de_keys = new ArrayList<Pair<Integer,Integer>>(m_ij.keySet());
+			if (mij_size == 1){
+				pair = lista_de_keys.get(0);
+			}else{
+				int random_position = randomizer.nextInt(mij_size);									
+				pair = lista_de_keys.get(random_position);
 			}
-			return null;
+			return pair;
 		}
-		return null;
+		return null;		
 	}
 }
 
