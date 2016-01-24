@@ -85,7 +85,7 @@ public class Graph implements BaseGraph
 	// the number of arcs in the graph
 	protected int _edge_num = 0;
 	
-	// nodos terminales de la solución
+	// nodos terminales de la soluciï¿½n
 	private List<Integer> nodos_terminales = new ArrayList<Integer>();	
 	
 	/**
@@ -448,15 +448,15 @@ public class Graph implements BaseGraph
 				i = vertices_path.get(indice_lista).get_id();
 				j = vertices_path.get(indice_lista+1).get_id();
 				
-				//ME FIJO SI DEBO AGREGAR VÉRTICES NUEVOS A GSol
-				if (Gsol._id_vertex_index.get(i)==null){ //el vértice i no existe
+				//ME FIJO SI DEBO AGREGAR Vï¿½RTICES NUEVOS A GSol
+				if (Gsol._id_vertex_index.get(i)==null){ //el vï¿½rtice i no existe
 					BaseVertex v = vertices_path.get(indice_lista);
 					v.set_terminales(false);
 					Gsol._id_vertex_index.put(i, v);
 					Gsol._vertex_list.add(v);
 					Gsol._vertex_num++;
 				}				
-				if (Gsol._id_vertex_index.get(j)==null){ //el vértice j no existe
+				if (Gsol._id_vertex_index.get(j)==null){ //el vï¿½rtice j no existe
 					BaseVertex v = vertices_path.get(indice_lista+1);
 					v.set_terminales(false);
 					Gsol._id_vertex_index.put(j, v);
@@ -470,7 +470,7 @@ public class Graph implements BaseGraph
 				Set<BaseVertex> entrantes_i = Gsol._fanin_vertices_index.get(i);
 				Set<BaseVertex> saliente_i = Gsol._fanout_vertices_index.get(i);
 				
-				if (entrantes_i==null){ //Gsol es vacío
+				if (entrantes_i==null){ //Gsol es vacï¿½o
 					entrantes_i = new HashSet<BaseVertex>();			
 					
 					//nuestro grafo no es dirigido por lo cual entrantes_i = salientes_i
@@ -480,7 +480,7 @@ public class Graph implements BaseGraph
 				//agregar nodos entrantes y salientes a j
 				Set<BaseVertex> entrantes_j = Gsol._fanin_vertices_index.get(j);
 				Set<BaseVertex> saliente_j = Gsol._fanout_vertices_index.get(j);
-				if (entrantes_j==null){ //Gsol es vacío
+				if (entrantes_j==null){ //Gsol es vacï¿½o
 					entrantes_j = new HashSet<BaseVertex>();			
 					
 					//nuestro grafo no es dirigido por lo cual entrantes_i = salientes_i
@@ -542,6 +542,11 @@ public class Graph implements BaseGraph
 	public void setNodos_terminales(List<Integer> nodos_terminales) {
 		this.nodos_terminales = nodos_terminales;
 	}
+	
+	public boolean isKeyNode(BaseVertex vertex){
+		return vertex.isTerminales() || ((this._fanin_vertices_index.get(vertex.get_id())).size() >2);
+	}
+	
 	
 }
 
