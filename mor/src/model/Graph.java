@@ -544,7 +544,10 @@ public class Graph implements BaseGraph
 	}
 	
 	public boolean isKeyNode(BaseVertex vertex){
-		return vertex.isTerminales() || ((this._fanin_vertices_index.get(vertex.get_id())).size() >2);
+		if (vertex.isTerminalNode())
+			return true;
+		Set<BaseVertex> entrantes = this._fanin_vertices_index.get(vertex.get_id());
+		return entrantes.size() >2;
 	}
 	
 	

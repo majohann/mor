@@ -11,14 +11,17 @@ import model.*;
 public class mor {
 
 	public static void main(String[] args) {
-		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
+		System.out.println("Metaheurï¿½sticas y Optimizaciï¿½n sobre Redes - 2015\n");
 		
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
 		Graph G = new Graph("data/test_mor");
+		
+		boolean hola =G.isKeyNode(G.get_vertex(1));
+		
 		G.export_to_file("data/salidas/G_creado.txt");
 				
-		System.out.println("Construyo solución inicial...");
+		System.out.println("Construyo soluciï¿½n inicial...");
 		Graph Gsol = construir_solucion_inicial(G); 
 		
 		System.out.println("Fin.");
@@ -27,7 +30,7 @@ public class mor {
 	
 	
 	private static Graph construir_solucion_inicial (Graph G){
-		//Cargo nodos terminales (después deberíamos cargarlos desde un archivo)(por ahora harcodeado)
+		//Cargo nodos terminales (despuï¿½s deberï¿½amos cargarlos desde un archivo)(por ahora harcodeado)
 		List<Integer> T = G.getNodos_terminales();
 		
 		//al momento de cargar los T debo generar esto (por ahora harcodeado)

@@ -44,5 +44,4 @@ public interface BaseVertex
 	void set_weight(double weight);
 	void set_terminales (boolean t);
 	void set_id(int id);
-	boolean isTerminales();
 }
