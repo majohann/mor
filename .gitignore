@@ -1,6 +1,7 @@
 .metadata
 bin/
 tmp/
+data/salidas/
 *.tmp
 *.bak
 *.swp
@@ -9,7 +10,7 @@ local.properties
 .settings/
 .loadpath
 
-# Eclipse Core 1
+# Eclipse Core
 .project
 
 # External tool builders

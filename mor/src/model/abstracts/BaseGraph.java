@@ -46,4 +46,5 @@ public interface BaseGraph
 	double get_edge_weight(BaseVertex source, BaseVertex sink);
 	Set<BaseVertex> get_adjacent_vertices(BaseVertex vertex);
 	Set<BaseVertex> get_precedent_vertices(BaseVertex vertex);
+	boolean isKeyNode(BaseVertex vertex);
 }
