@@ -48,6 +48,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
+import org.omg.CORBA.VersionSpecHelper;
+
 import model.abstracts.BaseGraph;
 import model.abstracts.BaseVertex;
 
@@ -543,7 +545,107 @@ public class Graph implements BaseGraph
 		this.nodos_terminales = nodos_terminales;
 	}
 	
+	
+	public boolean isKeyNodo (int id_vertex){		
+		BaseVertex vertex = _id_vertex_index.get(id_vertex);
+		if (vertex.isTerminalNode()){
+			return true;
+		}else {
+			Set<BaseVertex> out_nodes = _fanout_vertices_index.get(id_vertex);
+			if ((out_nodes!=null) && (out_nodes.size()==3)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isGrado2Node (int id_vertex){
+		Set<BaseVertex> out_nodes = _fanout_vertices_index.get(id_vertex);
+		if ((out_nodes!=null) && (out_nodes.size()==2)){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isKeyPath (Path p){
+		List<BaseVertex> vertices_path = p._vertex_list;
+		if ((vertices_path!=null) && (vertices_path.size()>2)){ //o-o-o
+			int p_length = vertices_path.size();
+			BaseVertex nodo_inicial = vertices_path.get(0);
+			BaseVertex nodo_final = vertices_path.get(p_length-1);
+			if ((!isKeyNodo(nodo_inicial.get_id()) || (!isKeyNodo(nodo_final.get_id())))){
+				return false;
+			}
+			for (int i = 0; i<p_length-1; i++){
+				if ((!isGrado2Node(vertices_path.get(i).get_id())) && (!vertices_path.get(i).isTerminalNode())){
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}	
+	
+	
+	public List<Path> pathsBetween2Nodes (int id_inicio, int id_destino){
+		boolean [] visited = new boolean [_vertex_num];
+		for (int i = 0; i<_vertex_num; i++)
+			visited[i]=false;
+		List<BaseVertex> path = new ArrayList<BaseVertex>(); 
+		dfs(_id_vertex_index.get(id_inicio), _id_vertex_index.get(id_destino), path, visited, 0);
+		
+		List<Path> key_paths = null;
+		if ((lista_path!=null) && (lista_path.size()>0)){
+			for (List<BaseVertex> list: lista_path){
+				Path p = new Path();
+				p._vertex_list = new ArrayList<BaseVertex>(list);
+				if (isKeyPath(p)){
+					if (key_paths==null){
+						key_paths = new ArrayList<Path>();
+					}
+					key_paths.add(p);
+				}					
+			}
+		}
+		
+		return key_paths;
+	}
+	
+	private static List<List<BaseVertex>> lista_path = new ArrayList<List<BaseVertex>>();
+	
+	private void dfs(BaseVertex src, BaseVertex dst, List<BaseVertex> path, boolean [] visited, int size) {
+	        //agrego nodo a la path
+	        path.add(src);
+	        size++;
+	         
+	        //marco nodo como visitado
+	        visited[src.get_id()] = true;
+	         
+	        //destino==src
+	        if (src.get_id() == dst.get_id()) {
+	        	lista_path.add(path);
+	            return;
+	        }
+	         
+	        Set<BaseVertex> out_vertexs_from_src = _fanout_vertices_index.get(src.get_id());
+	        for (int I = 1; I <= _vertex_num-1 ; I++) {
+	        	BaseVertex v = _id_vertex_index.get(I);
+	            //si existe arista desde src a I
+	            if (out_vertexs_from_src.contains(v)) {	                 
+	                //I no visitado
+	                if (visited[I] == false) {
+	                    dfs(v, dst,path, visited,size);
+	                    visited[I] = false;
+	                    size--;	                     
+	                    path.remove(size);
+	                }
+	            }
+	        }
+	    }
+	
 }
+
+
 
 
 
