@@ -25,37 +25,7 @@ public class mor {
 		System.out.println("Construyo solución inicial...");
 		Graph Gsol = construir_solucion_inicial(G); 
 		
-		System.out.println("Fin.");
-		
-		/*
-		List<BaseVertex> path1 = new ArrayList<BaseVertex>(); //2-3-4
-		for (int i=2; i<5; i++){
-			BaseVertex v1 = new Vertex();
-			v1.set_id(i);
-			path1.add(v1);
-		}
-		
-		Path p1 = new Path();
-		p1.setVertexList(path1);
-		
-		List<BaseVertex> path2 = new ArrayList<BaseVertex>(); //2-3-4
-		for (int i=2; i<5; i++){
-			BaseVertex v1 = new Vertex();
-			v1.set_id(i);
-			path2.add(v1);
-		}
-		
-		
-		Path p2 = new Path();
-		p2.setVertexList(path2);
-		
-		if (p1.path_contains_path(p2)){
-			System.out.println("La contiene señor!!");
-		}else{
-			System.out.println("negativo-central");
-		}
-		*/
-		
+		System.out.println("Fin.");		
 	}
 	
 	
