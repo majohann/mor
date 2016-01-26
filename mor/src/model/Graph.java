@@ -547,7 +547,7 @@ public class Graph implements BaseGraph
 		this.nodos_terminales = nodos_terminales;
 	}
 	
-	public List<Path> getKeyPathFromGraph(){
+	public Pair<Path,List<Path>> getKeyPathFromGraph(){
 		Path keyPath;
 		List<Path> result = new ArrayList<Path>();
 		long seed = System.nanoTime();
@@ -570,7 +570,7 @@ public class Graph implements BaseGraph
 							}								
 						}
 						else{
-							if (camino.containsPath(keyPath)){
+							if (camino.path_contains_path(keyPath)){
 								result.add(camino);
 							}
 						}
@@ -579,6 +579,7 @@ public class Graph implements BaseGraph
 				}
 			}
 		}
+		return new Pair<>(keyPath,result);
 	}
 	
 	public boolean isKeyNode(BaseVertex vertex){
