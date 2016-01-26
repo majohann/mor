@@ -579,7 +579,7 @@ public class Graph implements BaseGraph
 				}
 			}
 		}
-		return new Pair<>(keyPath,result);
+		return new Pair<Path,List<Path>>(keyPath,result);
 	}
 	
 	public boolean isKeyNode(BaseVertex vertex){
