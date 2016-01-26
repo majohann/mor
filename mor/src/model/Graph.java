@@ -40,16 +40,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
 import model.abstracts.BaseGraph;
 import model.abstracts.BaseVertex;
+import algorithms.YenTopKShortestPathsAlg;
 
 /** majo
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
@@ -541,6 +544,40 @@ public class Graph implements BaseGraph
 
 	public void setNodos_terminales(List<Integer> nodos_terminales) {
 		this.nodos_terminales = nodos_terminales;
+	}
+	
+	public List<Path> getKeyPathFromGraph(){
+		Path keyPath;
+		List<Path> result = new ArrayList<Path>();
+		long seed = System.nanoTime();
+		List<Integer> nodosADesordenar = this.nodos_terminales;
+		Collections.shuffle(nodosADesordenar, new Random(seed));
+		List<Integer> nodosADesordenar2 = this.nodos_terminales;
+		Collections.shuffle(nodosADesordenar2, new Random(seed));
+		for (int indexTerminal1:nodosADesordenar){
+			for (int indexTerminal2:nodosADesordenar2){
+				if (indexTerminal1!=indexTerminal2){
+					BaseVertex terminal1 = get_vertex(indexTerminal1);
+					BaseVertex terminal2 = get_vertex(indexTerminal2);
+					YenTopKShortestPathsAlg yen = new YenTopKShortestPathsAlg(this);
+					List<Path> caminos12 = yen.get_shortest_paths(terminal1,terminal2, 3);
+					for (Path camino:caminos12){
+						if (keyPath!=null){
+							keyPath = getKeyPath(camino);
+							if (keyPath!=null){
+								result.add(camino);
+							}								
+						}
+						else{
+							if (camino.containsPath(keyPath)){
+								result.add(camino);
+							}
+						}
+							
+					}
+				}
+			}
+		}
 	}
 	
 	public boolean isKeyNode(BaseVertex vertex){
