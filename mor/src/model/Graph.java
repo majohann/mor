@@ -548,7 +548,7 @@ public class Graph implements BaseGraph
 	}
 	
 	public Pair<Path,List<Path>> getKeyPathFromGraph(){
-		Path keyPath;
+		Path keyPath = null;
 		List<Path> result = new ArrayList<Path>();
 		long seed = System.nanoTime();
 		List<Integer> nodosADesordenar = this.nodos_terminales;
