@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -546,8 +547,8 @@ public class Graph implements BaseGraph
 		this.nodos_terminales = nodos_terminales;
 	}
 	
-	public List<Path> getKeyPathFromGraph(){
-		Path keyPath;
+	public Pair<Path,List<Path>> getKeyPathFromGraph(){
+		Path keyPath = null;
 		List<Path> result = new ArrayList<Path>();
 		long seed = System.nanoTime();
 		List<Integer> nodosADesordenar = this.nodos_terminales;
@@ -569,7 +570,7 @@ public class Graph implements BaseGraph
 							}								
 						}
 						else{
-							if (camino.containsPath(keyPath)){
+							if (camino.path_contains_path(keyPath)){
 								result.add(camino);
 							}
 						}
@@ -578,6 +579,7 @@ public class Graph implements BaseGraph
 				}
 			}
 		}
+		return new Pair<Path,List<Path>>(keyPath,result);
 	}
 	
 	public boolean isKeyNode(BaseVertex vertex){
@@ -585,6 +587,25 @@ public class Graph implements BaseGraph
 			return true;
 		Set<BaseVertex> entrantes = this._fanin_vertices_index.get(vertex.get_id());
 		return entrantes.size() >2;
+	}
+	
+	public Path getKeyPath(Path camino){
+		Path keyPath = new Path();
+		Iterator<BaseVertex> it = camino._vertex_list.iterator();
+		Boolean first = false;
+		BaseVertex v;
+		// Find the first key-path starting in the first vertex.
+		while(it.hasNext()){
+			v = it.next();
+			if (first){
+				keyPath.push_vertex(v);
+				first = false;
+			} else if (isKeyNode(v)){
+				keyPath.push_vertex(v);
+				return keyPath;
+			}
+		}
+		return null;
 	}
 	
 	
