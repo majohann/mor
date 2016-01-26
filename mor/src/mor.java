@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import algorithms.YenTopKShortestPathsAlg;
 import model.*;
+import model.abstracts.BaseVertex;
 
 public class mor {
 
@@ -16,6 +17,9 @@ public class mor {
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
 		Graph G = new Graph("data/test_mor");
+		
+		boolean hola =G.isKeyNode(G.get_vertex(1));
+		
 		G.export_to_file("data/salidas/G_creado.txt");
 				
 		System.out.println("Construyo solución inicial...");
@@ -23,11 +27,40 @@ public class mor {
 		
 		System.out.println("Fin.");
 		
+		/*
+		List<BaseVertex> path1 = new ArrayList<BaseVertex>(); //2-3-4
+		for (int i=2; i<5; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			path1.add(v1);
+		}
+		
+		Path p1 = new Path();
+		p1.setVertexList(path1);
+		
+		List<BaseVertex> path2 = new ArrayList<BaseVertex>(); //2-3-4
+		for (int i=2; i<5; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			path2.add(v1);
+		}
+		
+		
+		Path p2 = new Path();
+		p2.setVertexList(path2);
+		
+		if (p1.path_contains_path(p2)){
+			System.out.println("La contiene señor!!");
+		}else{
+			System.out.println("negativo-central");
+		}
+		*/
+		
 	}
 	
 	
 	private static Graph construir_solucion_inicial (Graph G){
-		//Cargo nodos terminales (después deberíamos cargarlos desde un archivo)(por ahora harcodeado)
+		//Cargo nodos terminales (despuï¿½s deberï¿½amos cargarlos desde un archivo)(por ahora harcodeado)
 		List<Integer> T = G.getNodos_terminales();
 		
 		//al momento de cargar los T debo generar esto (por ahora harcodeado)

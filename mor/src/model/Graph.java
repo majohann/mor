@@ -54,7 +54,7 @@ import model.abstracts.BaseGraph;
 import model.abstracts.BaseVertex;
 import algorithms.YenTopKShortestPathsAlg;
 
-/**
+/** majo
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision: 783 $
  * @latest $Date: 2009-06-19 12:19:27 -0700 (Fri, 19 Jun 2009) $
@@ -578,6 +578,15 @@ public class Graph implements BaseGraph
 				}
 			}
 		}
+	}
+	
+	public boolean isKeyNode(BaseVertex vertex){
+		if (vertex.isTerminalNode())
+			return true;
+		Set<BaseVertex> entrantes = this._fanin_vertices_index.get(vertex.get_id());
+		return entrantes.size() >2;
+	}
+	
 	
 }
 

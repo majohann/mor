@@ -96,4 +96,5 @@ public class Vertex implements BaseVertex, Comparable<Vertex>
 	public void set_terminales(boolean t) {
 		nodo_terminal = t;		
 	}
+
 }
