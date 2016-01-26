@@ -30,8 +30,12 @@
  */
 package model;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import javax.crypto.EncryptedPrivateKeyInfo;
 
 import model.abstracts.BaseElementWithWeight;
 import model.abstracts.BaseVertex;
@@ -97,5 +101,46 @@ public class Path implements BaseElementWithWeight
 	public String toString()
 	{
 		return _vertex_list.toString()+":"+_weight;
+	}
+	
+	public boolean path_contains_path (Path path){
+		List<BaseVertex> p_vertex_list = path._vertex_list;
+		if ((_vertex_list!=null) && (_vertex_list.size()>0) && (p_vertex_list!=null) && (p_vertex_list.size()>0)){
+			
+			int indice_comienzo = 0;
+			Iterator<BaseVertex> it = _vertex_list.iterator();
+			boolean encontre_comienzo = false;
+			while (it.hasNext() && (!encontre_comienzo)){
+				BaseVertex v = it.next();
+				if (v.get_id() == p_vertex_list.get(0).get_id()){
+					encontre_comienzo = true;
+				}else{
+					indice_comienzo++;
+				}
+			}
+			
+			if (encontre_comienzo){
+				int indice_p = 0;
+				boolean caminos_iguales = true;
+				int p_vertex_list_length=p_vertex_list.size();
+				for (int indice = indice_comienzo; indice<_vertex_list.size() && caminos_iguales && (indice_p<p_vertex_list_length); indice++){
+					if (_vertex_list.get(indice).get_id()==p_vertex_list.get(indice_p).get_id()){
+						indice_p++;
+					}else{
+						caminos_iguales = false;
+					}
+				}
+				if (indice_p<p_vertex_list_length)
+					return false;
+				return caminos_iguales;
+			}
+			return false;
+			
+		}
+		return false;
+	}
+	
+	public void setVertexList (List<BaseVertex> lista){
+		_vertex_list = new ArrayList<BaseVertex>(lista);
 	}
 }

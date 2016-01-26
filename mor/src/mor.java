@@ -7,11 +7,12 @@ import java.util.Map.Entry;
 
 import algorithms.YenTopKShortestPathsAlg;
 import model.*;
+import model.abstracts.BaseVertex;
 
 public class mor {
 
 	public static void main(String[] args) {
-		System.out.println("Metaheurï¿½sticas y Optimizaciï¿½n sobre Redes - 2015\n");
+		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
 		
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
@@ -21,10 +22,39 @@ public class mor {
 		
 		G.export_to_file("data/salidas/G_creado.txt");
 				
-		System.out.println("Construyo soluciï¿½n inicial...");
+		System.out.println("Construyo solución inicial...");
 		Graph Gsol = construir_solucion_inicial(G); 
 		
 		System.out.println("Fin.");
+		
+		/*
+		List<BaseVertex> path1 = new ArrayList<BaseVertex>(); //2-3-4
+		for (int i=2; i<5; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			path1.add(v1);
+		}
+		
+		Path p1 = new Path();
+		p1.setVertexList(path1);
+		
+		List<BaseVertex> path2 = new ArrayList<BaseVertex>(); //2-3-4
+		for (int i=2; i<5; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			path2.add(v1);
+		}
+		
+		
+		Path p2 = new Path();
+		p2.setVertexList(path2);
+		
+		if (p1.path_contains_path(p2)){
+			System.out.println("La contiene señor!!");
+		}else{
+			System.out.println("negativo-central");
+		}
+		*/
 		
 	}
 	
