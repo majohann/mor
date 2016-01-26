@@ -40,16 +40,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
 import model.abstracts.BaseGraph;
 import model.abstracts.BaseVertex;
+import algorithms.YenTopKShortestPathsAlg;
 
 /**
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
@@ -85,7 +88,7 @@ public class Graph implements BaseGraph
 	// the number of arcs in the graph
 	protected int _edge_num = 0;
 	
-	// nodos terminales de la solución
+	// nodos terminales de la soluciï¿½n
 	private List<Integer> nodos_terminales = new ArrayList<Integer>();	
 	
 	/**
@@ -448,15 +451,15 @@ public class Graph implements BaseGraph
 				i = vertices_path.get(indice_lista).get_id();
 				j = vertices_path.get(indice_lista+1).get_id();
 				
-				//ME FIJO SI DEBO AGREGAR VÉRTICES NUEVOS A GSol
-				if (Gsol._id_vertex_index.get(i)==null){ //el vértice i no existe
+				//ME FIJO SI DEBO AGREGAR Vï¿½RTICES NUEVOS A GSol
+				if (Gsol._id_vertex_index.get(i)==null){ //el vï¿½rtice i no existe
 					BaseVertex v = vertices_path.get(indice_lista);
 					v.set_terminales(false);
 					Gsol._id_vertex_index.put(i, v);
 					Gsol._vertex_list.add(v);
 					Gsol._vertex_num++;
 				}				
-				if (Gsol._id_vertex_index.get(j)==null){ //el vértice j no existe
+				if (Gsol._id_vertex_index.get(j)==null){ //el vï¿½rtice j no existe
 					BaseVertex v = vertices_path.get(indice_lista+1);
 					v.set_terminales(false);
 					Gsol._id_vertex_index.put(j, v);
@@ -470,7 +473,7 @@ public class Graph implements BaseGraph
 				Set<BaseVertex> entrantes_i = Gsol._fanin_vertices_index.get(i);
 				Set<BaseVertex> saliente_i = Gsol._fanout_vertices_index.get(i);
 				
-				if (entrantes_i==null){ //Gsol es vacío
+				if (entrantes_i==null){ //Gsol es vacï¿½o
 					entrantes_i = new HashSet<BaseVertex>();			
 					
 					//nuestro grafo no es dirigido por lo cual entrantes_i = salientes_i
@@ -480,7 +483,7 @@ public class Graph implements BaseGraph
 				//agregar nodos entrantes y salientes a j
 				Set<BaseVertex> entrantes_j = Gsol._fanin_vertices_index.get(j);
 				Set<BaseVertex> saliente_j = Gsol._fanout_vertices_index.get(j);
-				if (entrantes_j==null){ //Gsol es vacío
+				if (entrantes_j==null){ //Gsol es vacï¿½o
 					entrantes_j = new HashSet<BaseVertex>();			
 					
 					//nuestro grafo no es dirigido por lo cual entrantes_i = salientes_i
@@ -542,6 +545,39 @@ public class Graph implements BaseGraph
 	public void setNodos_terminales(List<Integer> nodos_terminales) {
 		this.nodos_terminales = nodos_terminales;
 	}
+	
+	public List<Path> getKeyPathFromGraph(){
+		Path keyPath;
+		List<Path> result = new ArrayList<Path>();
+		long seed = System.nanoTime();
+		List<Integer> nodosADesordenar = this.nodos_terminales;
+		Collections.shuffle(nodosADesordenar, new Random(seed));
+		List<Integer> nodosADesordenar2 = this.nodos_terminales;
+		Collections.shuffle(nodosADesordenar2, new Random(seed));
+		for (int indexTerminal1:nodosADesordenar){
+			for (int indexTerminal2:nodosADesordenar2){
+				if (indexTerminal1!=indexTerminal2){
+					BaseVertex terminal1 = get_vertex(indexTerminal1);
+					BaseVertex terminal2 = get_vertex(indexTerminal2);
+					YenTopKShortestPathsAlg yen = new YenTopKShortestPathsAlg(this);
+					List<Path> caminos12 = yen.get_shortest_paths(terminal1,terminal2, 3);
+					for (Path camino:caminos12){
+						if (keyPath!=null){
+							keyPath = getKeyPath(camino);
+							if (keyPath!=null){
+								result.add(camino);
+							}								
+						}
+						else{
+							if (camino.containsPath(keyPath)){
+								result.add(camino);
+							}
+						}
+							
+					}
+				}
+			}
+		}
 	
 }
 
