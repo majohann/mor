@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -585,6 +586,25 @@ public class Graph implements BaseGraph
 			return true;
 		Set<BaseVertex> entrantes = this._fanin_vertices_index.get(vertex.get_id());
 		return entrantes.size() >2;
+	}
+	
+	public Path getKeyPath(Path camino){
+		Path keyPath = new Path();
+		Iterator<BaseVertex> it = camino._vertex_list.iterator();
+		Boolean first = false;
+		BaseVertex v;
+		// Find the first key-path starting in the first vertex.
+		while(it.hasNext()){
+			v = it.next();
+			if (first){
+				keyPath.push_vertex(v);
+				first = false;
+			} else if (isKeyNode(v)){
+				keyPath.push_vertex(v);
+				return keyPath;
+			}
+		}
+		return null;
 	}
 	
 	
