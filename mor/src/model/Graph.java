@@ -563,7 +563,7 @@ public class Graph implements BaseGraph
 					YenTopKShortestPathsAlg yen = new YenTopKShortestPathsAlg(this);
 					List<Path> caminos12 = yen.get_shortest_paths(terminal1,terminal2, 3);
 					for (Path camino:caminos12){
-						if (keyPath!=null){
+						if (keyPath==null){
 							keyPath = getKeyPath(camino);
 							if (keyPath!=null){
 								result.add(camino);
