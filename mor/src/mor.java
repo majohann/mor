@@ -17,17 +17,18 @@ public class mor {
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
 		Graph G = new Graph("data/test_mor");
-		
-		boolean hola =G.isKeyNode(G.get_vertex(1));
-		
+			
 		G.export_to_file("data/salidas/G_creado.txt");
 				
 		System.out.println("Construyo solución inicial...");
+		
+		
 		Graph Gsol = construir_solucion_inicial(G); 
 		
 		System.out.println("Fin.");		
 	}
 	
+	private static Map<Pair<Integer,Integer>,List<Path>> P_ij = new HashMap<Pair<Integer,Integer>, List<Path>>();
 	
 	private static Graph construir_solucion_inicial (Graph G){
 		//Cargo nodos terminales (despuï¿½s deberï¿½amos cargarlos desde un archivo)(por ahora harcodeado)
@@ -59,9 +60,7 @@ public class mor {
 			for (Path p : Pij){
 				H = H.grafo_menos_camino(p);
 			}
-			
-			//H.export_to_file("data/salidas/H_menos_camino_"+iter+".txt");
-			
+						
 			Map<Pair<Integer, Integer>, Double> cost_techo = G.get_vertex_pair_weight_index();
 			Map<Pair<Integer, Integer>, Double> Gsol_edges_cost = Gsol.get_vertex_pair_weight_index();
 			if (Gsol_edges_cost==null)
@@ -91,14 +90,24 @@ public class mor {
 				
 				Vertex i = (Vertex) H.get_vertex(random_ij.first());
 				Vertex j = (Vertex) H.get_vertex(random_ij.second());
-				int old_mij = m_ij.get(new Pair<Integer,Integer>(i.get_id(),j.get_id()));
+				
+				Pair<Integer, Integer> pair_ij = new Pair<Integer, Integer>(i.get_id(),j.get_id());
+				
+				int old_mij = m_ij.get(pair_ij);
 				if (old_mij-1 == 0){
-					m_ij.remove(new Pair<Integer,Integer>(i.get_id(),j.get_id()));
+					m_ij.remove(pair_ij);
 				}else {
-					m_ij.put(new Pair<Integer,Integer>(i.get_id(),j.get_id()),old_mij-1);
+					m_ij.put(pair_ij,old_mij-1);
 				}
+					
+				List<Path> disjoint_node_path_list = P_ij.get(pair_ij);
+				if (disjoint_node_path_list==null){
+					disjoint_node_path_list = new ArrayList<Path>();
+				}
+				
 				if (shortest_path.get_weight()==0){
-					Pij.add(shortest_path);					
+					Pij.add(shortest_path);	
+					disjoint_node_path_list.add(shortest_path);					
 				}else{
 					Random randomizer = new Random();					
 					Path p_random = null;
@@ -107,10 +116,12 @@ public class mor {
 					}else {
 						p_random = yens_path.get(randomizer.nextInt(yens_path.size()));
 					}
-					Pij.add(p_random);		
+					Pij.add(p_random);	
+					disjoint_node_path_list.add(p_random);		
 					Gsol = Gsol.grafo_mas_camino(p_random, G);
-					//Gsol.export_to_file("data/salidas/Gsol_iter_"+iter+".txt");
 				}
+				
+				P_ij.put(pair_ij, new ArrayList<Path>(disjoint_node_path_list));
 			}	
 			
 			iter++;
