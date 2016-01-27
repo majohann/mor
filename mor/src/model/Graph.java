@@ -547,7 +547,7 @@ public class Graph implements BaseGraph
 		this.nodos_terminales = nodos_terminales;
 	}
 	
-	public Pair<Path,List<Path>> getKeyPathFromGraph(){
+	public Pair<Path,List<Path>> getKeyPathFromGraph(Map<Pair<Integer,Integer>,List<Path>> P_ij){
 		Path keyPath = null;
 		List<Path> result = new ArrayList<Path>();
 		long seed = System.nanoTime();
@@ -560,8 +560,8 @@ public class Graph implements BaseGraph
 				if (indexTerminal1!=indexTerminal2){
 					BaseVertex terminal1 = get_vertex(indexTerminal1);
 					BaseVertex terminal2 = get_vertex(indexTerminal2);
-					YenTopKShortestPathsAlg yen = new YenTopKShortestPathsAlg(this);
-					List<Path> caminos12 = yen.get_shortest_paths(terminal1,terminal2, 3);
+					Pair <Integer,Integer> pair_ij = new Pair<Integer, Integer>(terminal1.get_id(), terminal2.get_id());
+					List<Path> caminos12 = P_ij.get(pair_ij);
 					for (Path camino:caminos12){
 						if (keyPath==null){
 							keyPath = getKeyPath(camino);
