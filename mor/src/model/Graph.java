@@ -546,40 +546,47 @@ public class Graph implements BaseGraph
 	public void setNodos_terminales(List<Integer> nodos_terminales) {
 		this.nodos_terminales = nodos_terminales;
 	}
-	
-	public Pair<Path,List<Path>> getKeyPathFromGraph(Map<Pair<Integer,Integer>,List<Path>> P_ij){
-		Path keyPath = null;
-		List<Path> result = new ArrayList<Path>();
+	//Devuelve un keypath y la lista de todos los caminos que contienen al keypath para cada par de nodos terminales
+	public Pair<Path,Map<Pair<Integer,Integer>,List<Path>>> getKeyPathFromGraph(Map<Pair<Integer,Integer>,List<Path>> P_ij){
+		Path keyPath = null;		
+		Map<Pair<Integer,Integer>,List<Path>> nodoCaminos = new HashMap<Pair<Integer,Integer>,List<Path>>();
 		long seed = System.nanoTime();
-		List<Integer> nodosADesordenar = this.nodos_terminales;
-		Collections.shuffle(nodosADesordenar, new Random(seed));
-		List<Integer> nodosADesordenar2 = this.nodos_terminales;
-		Collections.shuffle(nodosADesordenar2, new Random(seed));
-		for (int indexTerminal1:nodosADesordenar){
-			for (int indexTerminal2:nodosADesordenar2){
-				if (indexTerminal1!=indexTerminal2){
-					BaseVertex terminal1 = get_vertex(indexTerminal1);
-					BaseVertex terminal2 = get_vertex(indexTerminal2);
-					Pair <Integer,Integer> pair_ij = new Pair<Integer, Integer>(terminal1.get_id(), terminal2.get_id());
-					List<Path> caminos12 = P_ij.get(pair_ij);
-					for (Path camino:caminos12){
-						if (keyPath==null){
-							keyPath = getKeyPath(camino);
-							if (keyPath!=null){
-								result.add(camino);
-							}								
-						}
-						else{
-							if (camino.path_contains_path(keyPath)){
-								result.add(camino);
+		List<Integer> nodosDesordenados = this.nodos_terminales;
+		Collections.shuffle(nodosDesordenados, new Random(seed));
+		for (int i=0; i<nodosDesordenados.size(); i++){
+			for (int j=i+1; j< nodosDesordenados.size(); j++){
+				int indexTerminal1 = nodosDesordenados.get(i);
+				int indexTerminal2 = nodosDesordenados.get(j);
+				BaseVertex terminal1 = get_vertex(indexTerminal1);
+				BaseVertex terminal2 = get_vertex(indexTerminal2);
+				Pair <Integer,Integer> pair_ij = new Pair<Integer, Integer>(terminal1.get_id(), terminal2.get_id());
+				List<Path> caminos12 = P_ij.get(pair_ij);
+				for (Path camino:caminos12){
+					List<Path> resultCaminos = nodoCaminos.get(pair_ij);
+					if (keyPath==null){
+						keyPath = getKeyPath(camino);
+						if (keyPath!=null){
+							if (resultCaminos == null){
+								resultCaminos = new ArrayList<Path>();
 							}
-						}
-							
+							resultCaminos.add(camino);
+						}								
 					}
+					else{
+						if (camino.path_contains_path(keyPath)){
+							if (resultCaminos == null){
+								resultCaminos = new ArrayList<Path>();
+							}
+							resultCaminos.add(camino);
+						}
+					}
+					nodoCaminos.put(pair_ij, resultCaminos);
+						
 				}
 			}
 		}
-		return new Pair<Path,List<Path>>(keyPath,result);
+		
+		return new Pair<Path,Map<Pair<Integer,Integer>,List<Path>>>(keyPath,nodoCaminos);
 	}
 	
 	public boolean isKeyNode(BaseVertex vertex){

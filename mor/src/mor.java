@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import algorithms.DijkstraShortestPathAlg;
 import algorithms.YenTopKShortestPathsAlg;
 import model.*;
 import model.abstracts.BaseVertex;
@@ -12,7 +14,7 @@ import model.abstracts.BaseVertex;
 public class mor {
 
 	public static void main(String[] args) {
-		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
+		System.out.println("Metaheurï¿½sticas y Optimizaciï¿½n sobre Redes - 2015\n");
 		
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
@@ -20,7 +22,7 @@ public class mor {
 			
 		G.export_to_file("data/salidas/G_creado.txt");
 				
-		System.out.println("Construyo solución inicial...");
+		System.out.println("Construyo soluciï¿½n inicial...");
 		
 		
 		Graph Gsol = construir_solucion_inicial(G); 
@@ -150,6 +152,71 @@ public class mor {
 		}
 		return null;		
 	}
+	
+	private static Graph busqueda_local(Graph G, Graph Gsol){
+		
+		//Obtener keypath y la lista de caminos que lo contienen
+		Pair<Path,Map<Pair<Integer,Integer>,List<Path>>> lista_caminos_keypath = Gsol.getKeyPathFromGraph(P_ij);
+		Path p_techo = lista_caminos_keypath.first();
+		Map<Pair<Integer,Integer>,List<Path>> par_nodos_caminos = lista_caminos_keypath.second();
+		List<BaseVertex> vertices_p_techo = p_techo.get_vertices();
+		BaseVertex u = vertices_p_techo.get(0);
+		BaseVertex v = vertices_p_techo.get(vertices_p_techo.size()-1);
+		Set<Pair<Integer,Integer>> Xp_techo = par_nodos_caminos.keySet();
+//		List<Path> Yp_techo = new ArrayList<Path>();
+//		for(Pair<Integer,Integer> ij : Xp_techo){
+//			Yp_techo.addAll(P_ij.get(ij));
+//			for (Path camino : par_nodos_caminos.get(ij)){
+//				Yp_techo.remove(camino); //fijarse que este remove funcione bien
+//			}
+//		}
+		//Nos ahorramos Yptecho
+		Graph H_techo = new Graph(G);
+		for(Pair<Integer,Integer> ij : Xp_techo){
+			List<Path> caminosP_ij = P_ij.get(ij);
+			for (Path camino : caminosP_ij){
+				H_techo.grafo_menos_camino(camino);
+			}
+			for (Path camino : par_nodos_caminos.get(ij)){
+				H_techo.grafo_mas_camino(camino, H_techo); //fijarse que este remove funcione bien
+			}
+		}
+		//para construir la matriz de costos
+		Graph Gsol_menos_p_techo = Gsol.grafo_menos_camino(p_techo);
+		Map<Pair<Integer, Integer>, Double> cost_techo = G.get_vertex_pair_weight_index();
+		Map<Pair<Integer, Integer>, Double> Gsol_menosp_edges_cost = Gsol_menos_p_techo.get_vertex_pair_weight_index();
+		if (Gsol_menosp_edges_cost==null)
+			Gsol_menosp_edges_cost = new HashMap<Pair<Integer,Integer>, Double>();
+		for (Entry<Pair<Integer, Integer>, Double> entry : Gsol_menosp_edges_cost.entrySet()) {
+			Pair<Integer, Integer> pair = entry.getKey();			    
+			cost_techo.put(pair, (double) 0);			    
+		}
+		
+		H_techo.set_vertex_pair_weight_index(cost_techo);
+		//obtener p_barra el camino mas corto de u a v en h techo
+		DijkstraShortestPathAlg dijkstra = new DijkstraShortestPathAlg(H_techo);
+		Path p_barra = dijkstra.get_shortest_path(u, v);
+		Gsol = Gsol_menos_p_techo.grafo_mas_camino(p_barra, Gsol_menos_p_techo);
+		
+		//Actualizar los Pij para todo ij perteneciente a x_p_techo
+		for (Pair<Integer,Integer> ij:Xp_techo){
+			//recorro caminos que devuelve el getkeypathfromgraph 
+			List<Path> pij = par_nodos_caminos.get(ij);
+			for (Path camino:pij){
+				P_ij.get(ij).remove(camino);
+				List<BaseVertex> vertices =  camino.get_vertices();
+				int indice = vertices.indexOf(u);
+				vertices.removeAll(p_techo.get_vertices());
+				vertices.addAll(indice, p_barra.get_vertices());
+				camino.setVertexList(vertices);
+				P_ij.get(ij).add(camino);
+			}
+		}	
+			
+		
+	return Gsol;	
+	}
+		
 }
 
 
