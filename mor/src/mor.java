@@ -206,7 +206,7 @@ public class mor {
 				P_ij.get(ij).remove(camino);
 				List<BaseVertex> vertices =  camino.get_vertices();
 				int indice = vertices.indexOf(u);
-				vertices.removeAll(p_techo.get_vertices());
+				vertices.removeAll(p_techo.get_vertices()); 
 				vertices.addAll(indice, p_barra.get_vertices());
 				camino.setVertexList(vertices);
 				P_ij.get(ij).add(camino);

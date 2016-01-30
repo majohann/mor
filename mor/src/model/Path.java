@@ -98,7 +98,7 @@ public class Path implements BaseElementWithWeight
 	
 	public String toString()
 	{
-		return _vertex_list.toString()+":"+_weight;
+		return _vertex_list.toString();//+":"+_weight;
 	}
 	
 	public boolean path_contains_path (Path path){
