@@ -576,7 +576,15 @@ public class Graph implements BaseGraph
 
 		
 	public Map<Pair<Integer, Integer>, Double> get_vertex_pair_weight_index() {
-		return _vertex_pair_weight_index;
+		Map<Pair<Integer, Integer>, Double> _vertex_pair_weight_index_nuevo = null;
+		Set<Pair<Integer,Integer>> set_viejo = _vertex_pair_weight_index.keySet();
+		for (Pair<Integer,Integer> p: set_viejo){
+			if (_vertex_pair_weight_index_nuevo==null)
+				_vertex_pair_weight_index_nuevo = new HashMap<Pair<Integer,Integer>, Double>();
+			Double d_viejo = new Double(_vertex_pair_weight_index.get(p));
+			_vertex_pair_weight_index_nuevo.put(p, d_viejo);
+		}		
+		return _vertex_pair_weight_index_nuevo;
 	}
 
 	public void set_vertex_pair_weight_index(

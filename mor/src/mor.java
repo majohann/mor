@@ -20,13 +20,16 @@ public class mor {
 		//Cargo grafo desde archivo
 		Graph G = new Graph("data/test_mor");
 			
-		G.export_to_file("data/salidas/G_creado.txt");
+		G.export_to_file("data/salidas/G.txt");
 				
-		System.out.println("Construyo solución inicial...");
+		System.out.println("Construyo solución inicial...");		
+		Graph Gsol = construir_solucion_inicial(G);
+		Gsol.export_to_file("data/salidas/Gsol_CI.txt");
 		
-		
-		Graph Gsol = construir_solucion_inicial(G); 
+		System.out.println("Iniciando búsqueda local...");
 		Gsol = busqueda_local(G, Gsol);
+		Gsol.export_to_file("data/salidas/Gsol_BL.txt");
+		
 		System.out.println("Fin.");		
 	}
 	
@@ -56,7 +59,6 @@ public class mor {
 		Pair<Integer,Integer> random_ij = get_random_ij(m_ij,T);
 			
 		Graph H = G.copy_of_graph();
-		H.export_to_file("data/salidas/H_G_copy.txt");
 		int iter = 0;
 		while ((random_ij!=null) && (iter<30)){ //mientras exista un (i,j) in TxT /mij>0
 			for (Path p : Pij){
@@ -128,9 +130,7 @@ public class mor {
 			
 			iter++;
 			random_ij = get_random_ij(m_ij,T);
-		}
-		
-		Gsol.export_to_file("data/salidas/G_solucion.txt");
+		}		
 		return Gsol;
 	}
 	
@@ -169,25 +169,10 @@ public class mor {
 
 		//Nos ahorramos Yptecho
 		Graph H_techo = G.copy_of_graph();
-		for(Pair<Integer,Integer> ij : Xp_techo){
-			List<Path> caminosP_ij = P_ij.get(ij);
-			for (Path camino : caminosP_ij){
-				H_techo = H_techo.grafo_menos_camino(camino);
-				H_techo.export_to_file("data/salidas/H_techo_BL_menos_camino.txt");
-			}
-			
-			for (Path camino : par_nodos_caminos.get(ij)){
-				H_techo = H_techo.grafo_mas_camino(camino, G); //fijarse que este remove funcione bien
-				H_techo.export_to_file("data/salidas/H_techo_BL_mas_camino.txt");
-			}
-			
-		}
-		
-		H_techo.export_to_file("data/salidas/H_techo_BL.txt");
-		G.export_to_file("data/salidas/G_BL.txt");
 		
 		//para construir la matriz de costos
 		Graph Gsol_menos_p_techo = Gsol.grafo_menos_camino(p_techo);
+		
 		Map<Pair<Integer, Integer>, Double> cost_techo = G.get_vertex_pair_weight_index();
 		Map<Pair<Integer, Integer>, Double> Gsol_menosp_edges_cost = Gsol_menos_p_techo.get_vertex_pair_weight_index();
 		if (Gsol_menosp_edges_cost==null)
@@ -198,10 +183,23 @@ public class mor {
 		}
 		
 		H_techo.set_vertex_pair_weight_index(cost_techo);
+		
+		for(Pair<Integer,Integer> ij : Xp_techo){
+			List<Path> caminosP_ij = P_ij.get(ij);
+			for (Path camino : caminosP_ij){
+				H_techo = H_techo.grafo_menos_camino(camino);
+			}
+			
+			for (Path camino : par_nodos_caminos.get(ij)){
+				H_techo = H_techo.grafo_mas_camino(camino, G); //fijarse que este remove funcione bien
+			}
+			
+		}
+		
 		//obtener p_barra el camino mas corto de u a v en h techo
 		DijkstraShortestPathAlg dijkstra = new DijkstraShortestPathAlg(H_techo);
 		Path p_barra = dijkstra.get_shortest_path(u, v);
-		Gsol = Gsol_menos_p_techo.grafo_mas_camino(p_barra, Gsol_menos_p_techo);
+		Gsol = Gsol_menos_p_techo.grafo_mas_camino(p_barra, G);
 		
 		//Actualizar los Pij para todo ij perteneciente a x_p_techo
 		for (Pair<Integer,Integer> ij:Xp_techo){
@@ -216,9 +214,7 @@ public class mor {
 				camino.setVertexList(vertices);
 				P_ij.get(ij).add(camino);
 			}
-		}	
-			
-		
+		}				
 	return Gsol;	
 	}
 		
