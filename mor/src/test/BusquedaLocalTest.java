@@ -141,4 +141,30 @@ public class BusquedaLocalTest {
 		
 	}
 	
+	@Test
+	public void test_getKeyPath() {
+		List<BaseVertex> vertices_path_1 = new ArrayList<BaseVertex>(); //2-3-4-5-6-7
+		for (int i=1; i<9; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			vertices_path_1.add(v1);
+		}
+		Path path1 = new Path();
+		path1.setVertexList(vertices_path_1);
+		
+		List<BaseVertex> vertices_path_2 = new ArrayList<BaseVertex>(); //4-5-6-7
+		for (int i=4; i<8; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			vertices_path_2.add(v1);
+		}
+		
+		Path path2 = new Path();
+		path2.setVertexList(vertices_path_2);
+	
+		assertTrue(path1.path_contains_path(path2));
+		assertFalse(path2.path_contains_path(path1));
+	}
+	
+
 }

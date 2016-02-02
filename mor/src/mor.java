@@ -14,7 +14,7 @@ import model.abstracts.BaseVertex;
 public class mor {
 
 	public static void main(String[] args) {
-		System.out.println("Metaheur�sticas y Optimizaci�n sobre Redes - 2015\n");
+		System.out.println("Metaheur�sticas y Optimización sobre Redes - 2015\n");
 		
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
@@ -22,7 +22,7 @@ public class mor {
 			
 		G.export_to_file("data/salidas/G_creado.txt");
 				
-		System.out.println("Construyo soluci�n inicial...");
+		System.out.println("Construyo solución inicial...");
 		
 		
 		Graph Gsol = construir_solucion_inicial(G); 
@@ -168,16 +168,24 @@ public class mor {
 		Set<Pair<Integer,Integer>> Xp_techo = par_nodos_caminos.keySet();
 
 		//Nos ahorramos Yptecho
-		Graph H_techo = new Graph(G);
+		Graph H_techo = G.copy_of_graph();
 		for(Pair<Integer,Integer> ij : Xp_techo){
 			List<Path> caminosP_ij = P_ij.get(ij);
 			for (Path camino : caminosP_ij){
-				H_techo.grafo_menos_camino(camino);
+				H_techo = H_techo.grafo_menos_camino(camino);
+				H_techo.export_to_file("data/salidas/H_techo_BL_menos_camino.txt");
 			}
+			
 			for (Path camino : par_nodos_caminos.get(ij)){
-				H_techo.grafo_mas_camino(camino, H_techo); //fijarse que este remove funcione bien
+				H_techo = H_techo.grafo_mas_camino(camino, G); //fijarse que este remove funcione bien
+				H_techo.export_to_file("data/salidas/H_techo_BL_mas_camino.txt");
 			}
+			
 		}
+		
+		H_techo.export_to_file("data/salidas/H_techo_BL.txt");
+		G.export_to_file("data/salidas/G_BL.txt");
+		
 		//para construir la matriz de costos
 		Graph Gsol_menos_p_techo = Gsol.grafo_menos_camino(p_techo);
 		Map<Pair<Integer, Integer>, Double> cost_techo = G.get_vertex_pair_weight_index();

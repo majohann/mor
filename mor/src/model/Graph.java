@@ -53,7 +53,6 @@ import java.util.Vector;
 
 import model.abstracts.BaseGraph;
 import model.abstracts.BaseVertex;
-import algorithms.YenTopKShortestPathsAlg;
 
 /** majo
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
@@ -372,7 +371,9 @@ public class Graph implements BaseGraph
 			vertex.set_terminales(true);
 			_vertex_list.add(vertex);
 			_id_vertex_index.put(vertex.get_id(), vertex);
+			nodos_terminales.add(id);
 		}
+		
 	}
 	
 	public int get_vertex_num(){
@@ -384,11 +385,65 @@ public class Graph implements BaseGraph
 		Graph copy = new Graph();
 		copy._vertex_num = _vertex_num;
 		copy._edge_num = _edge_num;
-		copy._vertex_list = new ArrayList<BaseVertex>(_vertex_list);
-		copy._fanin_vertices_index = new HashMap<Integer, Set<BaseVertex>>(_fanin_vertices_index);
-		copy._fanout_vertices_index = new HashMap<Integer, Set<BaseVertex>>(_fanout_vertices_index);
-		copy._id_vertex_index = new HashMap<Integer, BaseVertex>(_id_vertex_index);
+		copy._vertex_list = new ArrayList<BaseVertex>();
+		for (BaseVertex v: _vertex_list){
+			BaseVertex v_nuevo = new Vertex();
+			v_nuevo.set_id(v.get_id());
+			v_nuevo.set_terminales(v.isTerminalNode());
+			v_nuevo.set_weight(v.get_weight());
+			copy._vertex_list.add(v_nuevo);
+			
+		}
+		
+		copy._fanin_vertices_index = new HashMap<Integer, Set<BaseVertex>>();
+		Set<Integer> keys = _fanin_vertices_index.keySet();
+		for (Integer i : keys){
+			Set<BaseVertex> set_vertex = _fanin_vertices_index.get(i);
+			Set<BaseVertex> set_vertex_nuevo = new HashSet<BaseVertex>();
+			for (BaseVertex v: set_vertex){
+				BaseVertex v_nuevo = new Vertex();
+				v_nuevo.set_id(v.get_id());
+				v_nuevo.set_terminales(v.isTerminalNode());
+				v_nuevo.set_weight(v.get_weight());
+				set_vertex_nuevo.add(v_nuevo);				
+			}
+			copy._fanin_vertices_index.put(i, set_vertex_nuevo);
+		}
+		
+		copy._fanout_vertices_index = new HashMap<Integer, Set<BaseVertex>>();
+		keys = _fanout_vertices_index.keySet();
+		for (Integer i : keys){
+			Set<BaseVertex> set_vertex = _fanout_vertices_index.get(i);
+			Set<BaseVertex> set_vertex_nuevo = new HashSet<BaseVertex>();
+			for (BaseVertex v: set_vertex){
+				BaseVertex v_nuevo = new Vertex();
+				v_nuevo.set_id(v.get_id());
+				v_nuevo.set_terminales(v.isTerminalNode());
+				v_nuevo.set_weight(v.get_weight());
+				set_vertex_nuevo.add(v_nuevo);				
+			}
+			copy._fanout_vertices_index.put(i, set_vertex_nuevo);
+		}
+		
+		copy._id_vertex_index = new HashMap<Integer, BaseVertex>();
+		keys = _id_vertex_index.keySet();
+		for (Integer i : keys){
+			BaseVertex v =  _id_vertex_index.get(i);
+			BaseVertex v_nuevo = new Vertex(); 
+			v_nuevo.set_id(v.get_id());
+			v_nuevo.set_terminales(v.isTerminalNode());
+			v_nuevo.set_weight(v.get_weight());			
+			copy._id_vertex_index.put(i, v_nuevo);
+		}
+		
 		copy._vertex_pair_weight_index = new HashMap<Pair<Integer,Integer>, Double>(_vertex_pair_weight_index);
+		Set<Pair<Integer,Integer>> set_viejo = _vertex_pair_weight_index.keySet();
+		for (Pair<Integer,Integer> p: set_viejo){
+			Double d_viejo = new Double(_vertex_pair_weight_index.get(p));
+			copy._vertex_pair_weight_index.put(p, d_viejo);
+		}		
+		
+		copy.nodos_terminales = new ArrayList<Integer>(nodos_terminales);
 		
 		return copy;
 	}
@@ -406,7 +461,7 @@ public class Graph implements BaseGraph
 				
 				//elimino el j de los vertices salientes y entrantes de i
 				Set<BaseVertex> entrantes_i = H._fanin_vertices_index.get(i);
-				Set<BaseVertex> salientes_i = H._fanin_vertices_index.get(i);
+				Set<BaseVertex> salientes_i = H._fanout_vertices_index.get(i);
 				
 				BaseVertex vertex_j = vertices_path.get(indice_lista+1);
 				entrantes_i.remove(vertex_j);
@@ -427,14 +482,15 @@ public class Graph implements BaseGraph
 								
 				H._fanin_vertices_index.put(j, entrantes_j);
 				H._fanout_vertices_index.put(j, salientes_j);
-				indice_lista++;			
+				
+				//AGREGAR COSTOS
+				Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
+				Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
+				H._vertex_pair_weight_index.remove(pair_ij);
+				H._vertex_pair_weight_index.remove(pair_ji);
+				
+				indice_lista++;
 			}
-			
-			//AGREGAR COSTOS
-			Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
-			Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
-			H._vertex_pair_weight_index.remove(pair_ij);
-			H._vertex_pair_weight_index.remove(pair_ji);
 			
 		}
 		return H;
@@ -510,8 +566,7 @@ public class Graph implements BaseGraph
 				Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
 				double cost = G.get_edge_weight(vertices_path.get(indice_lista), vertices_path.get(indice_lista+1));
 				Gsol._vertex_pair_weight_index.put(pair_ij , cost);
-				Gsol._vertex_pair_weight_index.put(pair_ji , cost);
-				
+				Gsol._vertex_pair_weight_index.put(pair_ji , cost);			
 				
 				indice_lista ++;
 			}
@@ -555,7 +610,7 @@ public class Graph implements BaseGraph
 		Path keyPath = null;		
 		Map<Pair<Integer,Integer>,List<Path>> nodoCaminos = new HashMap<Pair<Integer,Integer>,List<Path>>();
 		
-		//desordena la posición de los elementos dentro de la lista nodos_terminales
+		//desordena la posiciï¿½n de los elementos dentro de la lista nodos_terminales
 		long seed = System.nanoTime();
 		List<Integer> nodosDesordenados = this.nodos_terminales;
 		Collections.shuffle(nodosDesordenados, new Random(seed));
@@ -569,9 +624,14 @@ public class Graph implements BaseGraph
 				
 				//me formo el par (terminal1,terminal2)
 				Pair <Integer,Integer> pair_ij = new Pair<Integer, Integer>(terminal1.get_id(), terminal2.get_id());
+				Pair <Integer,Integer> pair_ji = new Pair<Integer, Integer>(terminal2.get_id(), terminal1.get_id());
 				
 				//obtengo los caminos nodos disjuntos para el par de terminales terminal1 y terminal2
 				List<Path> caminos12 = P_ij.get(pair_ij);
+				if (caminos12==null){ //como desordena los pares puede ser que el par ij exista pero no da el ji
+					pair_ij=pair_ji;
+					caminos12 = P_ij.get(pair_ji);
+				}
 				
 				for (Path camino:caminos12){
 					List<Path> resultCaminos = nodoCaminos.get(pair_ij);
@@ -610,16 +670,15 @@ public class Graph implements BaseGraph
 	public Path getKeyPath(Path camino){
 		Path keyPath = new Path();
 		Iterator<BaseVertex> it = camino._vertex_list.iterator();
-		Boolean first = false;
+		Boolean first = true;
 		BaseVertex v;
 		// Find the first key-path starting in the first vertex.
 		while(it.hasNext()){
 			v = it.next();
+			keyPath.push_vertex(v);
 			if (first){
-				keyPath.push_vertex(v);
 				first = false;
-			} else if (isKeyNode(v)){
-				keyPath.push_vertex(v);
+			} else if (isKeyNode(v)){	
 				return keyPath;
 			}
 		}
