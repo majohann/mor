@@ -463,25 +463,45 @@ public class Graph implements BaseGraph
 				Set<BaseVertex> entrantes_i = H._fanin_vertices_index.get(i);
 				Set<BaseVertex> salientes_i = H._fanout_vertices_index.get(i);
 				
-				BaseVertex vertex_j = vertices_path.get(indice_lista+1);
-				entrantes_i.remove(vertex_j);
-				salientes_i.remove(vertex_j);
-				
-				H._fanin_vertices_index.put(i, entrantes_i);
-				H._fanout_vertices_index.put(i, salientes_i);
+				if (entrantes_i!=null){
+					BaseVertex vertex_j = vertices_path.get(indice_lista+1);
+					entrantes_i.remove(vertex_j);
+					salientes_i.remove(vertex_j);
+					
+					if (entrantes_i.size()==0){
+						H._fanin_vertices_index.remove(i);
+						H._fanout_vertices_index.remove(i);
+						H._vertex_list.remove(i);
+						H._vertex_num = H._vertex_num-1;
+					}else {
+						H._fanin_vertices_index.put(i, entrantes_i);
+						H._fanout_vertices_index.put(i, salientes_i);
+					}
+					
+					H._edge_num = H._edge_num -1;
+				}
 				
 				//elimino el j de los vertices salientes y entrantes de i
 				Set<BaseVertex> entrantes_j = H._fanin_vertices_index.get(j);
 				Set<BaseVertex> salientes_j = H._fanin_vertices_index.get(j);
 				
-				BaseVertex vertex_i = vertices_path.get(indice_lista);
-				entrantes_j.remove(vertex_i);
-				salientes_j.remove(vertex_i);
-				
-				H._edge_num = H._edge_num -2;
-								
-				H._fanin_vertices_index.put(j, entrantes_j);
-				H._fanout_vertices_index.put(j, salientes_j);
+				if (entrantes_j!=null){
+					BaseVertex vertex_i = vertices_path.get(indice_lista);
+					entrantes_j.remove(vertex_i);
+					salientes_j.remove(vertex_i);
+					
+					if (entrantes_j.size()==0){
+						H._fanin_vertices_index.remove(j);
+						H._fanout_vertices_index.remove(j);
+						H._vertex_list.remove(j);
+						H._vertex_num = H._vertex_num-1;
+					}else{
+						H._fanin_vertices_index.put(j, entrantes_j);
+						H._fanout_vertices_index.put(j, salientes_j);
+					}
+					
+					H._edge_num = H._edge_num -1;
+				}
 				
 				//AGREGAR COSTOS
 				Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
@@ -660,7 +680,8 @@ public class Graph implements BaseGraph
 							resultCaminos.add(camino);
 						}
 					}
-					nodoCaminos.put(pair_ij, resultCaminos);						
+					if (resultCaminos!=null)
+						nodoCaminos.put(pair_ij, resultCaminos);						
 				}
 			}
 		}

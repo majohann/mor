@@ -14,11 +14,11 @@ import model.abstracts.BaseVertex;
 public class mor {
 
 	public static void main(String[] args) {
-		System.out.println("Metaheur�sticas y Optimización sobre Redes - 2015\n");
+		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
 		
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
-		Graph G = new Graph("data/test_mor");
+		Graph G = new Graph("data/test_mor_4");
 			
 		G.export_to_file("data/salidas/G.txt");
 				
