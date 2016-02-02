@@ -26,7 +26,7 @@ public class mor {
 		
 		
 		Graph Gsol = construir_solucion_inicial(G); 
-		
+		Gsol = busqueda_local(G, Gsol);
 		System.out.println("Fin.");		
 	}
 	
@@ -157,19 +157,16 @@ public class mor {
 		
 		//Obtener keypath y la lista de caminos que lo contienen
 		Pair<Path,Map<Pair<Integer,Integer>,List<Path>>> lista_caminos_keypath = Gsol.getKeyPathFromGraph(P_ij);
+		
 		Path p_techo = lista_caminos_keypath.first();
+		
 		Map<Pair<Integer,Integer>,List<Path>> par_nodos_caminos = lista_caminos_keypath.second();
+		
 		List<BaseVertex> vertices_p_techo = p_techo.get_vertices();
 		BaseVertex u = vertices_p_techo.get(0);
 		BaseVertex v = vertices_p_techo.get(vertices_p_techo.size()-1);
 		Set<Pair<Integer,Integer>> Xp_techo = par_nodos_caminos.keySet();
-//		List<Path> Yp_techo = new ArrayList<Path>();
-//		for(Pair<Integer,Integer> ij : Xp_techo){
-//			Yp_techo.addAll(P_ij.get(ij));
-//			for (Path camino : par_nodos_caminos.get(ij)){
-//				Yp_techo.remove(camino); //fijarse que este remove funcione bien
-//			}
-//		}
+
 		//Nos ahorramos Yptecho
 		Graph H_techo = new Graph(G);
 		for(Pair<Integer,Integer> ij : Xp_techo){

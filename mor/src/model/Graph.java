@@ -546,25 +546,37 @@ public class Graph implements BaseGraph
 	public void setNodos_terminales(List<Integer> nodos_terminales) {
 		this.nodos_terminales = nodos_terminales;
 	}
+	
+	
+	
 	//Devuelve un keypath y la lista de todos los caminos que contienen al keypath para cada par de nodos terminales
 	public Pair<Path,Map<Pair<Integer,Integer>,List<Path>>> getKeyPathFromGraph(Map<Pair<Integer,Integer>,List<Path>> P_ij){
+	
 		Path keyPath = null;		
 		Map<Pair<Integer,Integer>,List<Path>> nodoCaminos = new HashMap<Pair<Integer,Integer>,List<Path>>();
+		
+		//desordena la posición de los elementos dentro de la lista nodos_terminales
 		long seed = System.nanoTime();
 		List<Integer> nodosDesordenados = this.nodos_terminales;
 		Collections.shuffle(nodosDesordenados, new Random(seed));
+		
 		for (int i=0; i<nodosDesordenados.size(); i++){
 			for (int j=i+1; j< nodosDesordenados.size(); j++){
-				int indexTerminal1 = nodosDesordenados.get(i);
-				int indexTerminal2 = nodosDesordenados.get(j);
-				BaseVertex terminal1 = get_vertex(indexTerminal1);
-				BaseVertex terminal2 = get_vertex(indexTerminal2);
+				int indexTerminal1 = nodosDesordenados.get(i); 
+				int indexTerminal2 = nodosDesordenados.get(j); 
+				BaseVertex terminal1 = get_vertex(indexTerminal1); //obtengo nodo terminal 1
+				BaseVertex terminal2 = get_vertex(indexTerminal2); //obtengo nodo terminal 2
+				
+				//me formo el par (terminal1,terminal2)
 				Pair <Integer,Integer> pair_ij = new Pair<Integer, Integer>(terminal1.get_id(), terminal2.get_id());
+				
+				//obtengo los caminos nodos disjuntos para el par de terminales terminal1 y terminal2
 				List<Path> caminos12 = P_ij.get(pair_ij);
+				
 				for (Path camino:caminos12){
 					List<Path> resultCaminos = nodoCaminos.get(pair_ij);
 					if (keyPath==null){
-						keyPath = getKeyPath(camino);
+						keyPath = getKeyPath(camino); //Devuelve el primer key-path dentro de camino
 						if (keyPath!=null){
 							if (resultCaminos == null){
 								resultCaminos = new ArrayList<Path>();
@@ -573,15 +585,14 @@ public class Graph implements BaseGraph
 						}								
 					}
 					else{
-						if (camino.path_contains_path(keyPath)){
+						if (camino.path_contains_path(keyPath)){ //veo si el camino contiene el keypath
 							if (resultCaminos == null){
 								resultCaminos = new ArrayList<Path>();
 							}
 							resultCaminos.add(camino);
 						}
 					}
-					nodoCaminos.put(pair_ij, resultCaminos);
-						
+					nodoCaminos.put(pair_ij, resultCaminos);						
 				}
 			}
 		}
