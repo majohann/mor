@@ -71,6 +71,35 @@ public class BusquedaLocalTest {
 		
 	}
 	
+	@Test
+	public void testCaminoMenosCamino1() {
+		List<BaseVertex> vertices = new ArrayList<BaseVertex>(); //1-2-3-4-5-6-7
+		for (int i=1; i<8; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			vertices.add(v1);
+		}
+		
+		int indice = 3;
+		
+		List<BaseVertex> vertices_a_sacar = new ArrayList<BaseVertex>(); //4-5-6-7
+		for (int i=4; i<8; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			vertices_a_sacar.add(v1);
+		}
+		
+		List<BaseVertex> vertices_a_agregar = new ArrayList<BaseVertex>(); //4-5-6-7
+		for (int i=-7; i<0; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			vertices_a_agregar.add(v1);
+		}
+		
+		vertices.removeAll(vertices_a_sacar);
+		vertices.addAll(indice, vertices_a_agregar);
+	}
+	
 	private String write_vertex_list (List<BaseVertex> list){
 		String text = "";
 		for (BaseVertex v: list){
@@ -164,6 +193,47 @@ public class BusquedaLocalTest {
 	
 		assertTrue(path1.path_contains_path(path2));
 		assertFalse(path2.path_contains_path(path1));
+	}
+	
+	@Test
+	public void testListaContienPath() {
+		List<BaseVertex> vertices_path_1 = new ArrayList<BaseVertex>(); //2-3-4-5-6-7
+		for (int i=1; i<9; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			vertices_path_1.add(v1);
+		}
+		Path path1 = new Path();
+		path1.setVertexList(vertices_path_1);
+		
+		List<BaseVertex> vertices_path_2 = new ArrayList<BaseVertex>(); //4-5-6-7
+		for (int i=4; i<8; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			vertices_path_2.add(v1);
+		}
+		
+		Path path2 = new Path();
+		path2.setVertexList(vertices_path_2);
+		
+		List<BaseVertex> vertices_path_3 = new ArrayList<BaseVertex>(); //4-5-6-7
+		for (int i=4; i<8; i++){
+			BaseVertex v1 = new Vertex();
+			v1.set_id(i);
+			vertices_path_3.add(v1);
+		}
+		
+		Path path3 = new Path();
+		path3.setVertexList(vertices_path_3);
+	
+		List<Path> lista = new ArrayList<Path>();
+		lista.add(path1);
+		lista.add(path2);
+		lista.add(path3);
+		
+		assertTrue(lista.contains(path1));
+		assertTrue(lista.contains(path3));
+		assertTrue(lista.contains(path2));	
 	}
 	
 

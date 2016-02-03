@@ -145,4 +145,6 @@ public class Path implements BaseElementWithWeight
 	public void push_vertex(BaseVertex v){
 		_vertex_list.add(v);
 	}
+	
+	
 }
