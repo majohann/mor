@@ -463,45 +463,29 @@ public class Graph implements BaseGraph
 				Set<BaseVertex> entrantes_i = H._fanin_vertices_index.get(i);
 				Set<BaseVertex> salientes_i = H._fanout_vertices_index.get(i);
 
-				//if (entrantes_i!=null){
+				if (entrantes_i!=null){
 					BaseVertex vertex_j = vertices_path.get(indice_lista+1);
 					entrantes_i.remove(vertex_j);
 					salientes_i.remove(vertex_j);
 
-//					if (entrantes_i.size()==0){
-//						H._fanin_vertices_index.remove(i);
-//						H._fanout_vertices_index.remove(i);
-//						H._vertex_list.remove(i);
-//						H._vertex_num = H._vertex_num-1;
-//					}else {
 						H._fanin_vertices_index.put(i, entrantes_i);
 						H._fanout_vertices_index.put(i, salientes_i);
-//					}
 
 					H._edge_num = H._edge_num -2;
-				//}
+				}
 
 				//elimino el j de los vertices salientes y entrantes de i
 				Set<BaseVertex> entrantes_j = H._fanin_vertices_index.get(j);
 				Set<BaseVertex> salientes_j = H._fanin_vertices_index.get(j);
 
-				//if (entrantes_j!=null){
+				if (entrantes_j!=null){
 					BaseVertex vertex_i = vertices_path.get(indice_lista);
 					entrantes_j.remove(vertex_i);
 					salientes_j.remove(vertex_i);
 
-//					if (entrantes_j.size()==0){
-//						H._fanin_vertices_index.remove(j);
-//						H._fanout_vertices_index.remove(j);
-//						H._vertex_list.remove(j);
-//						H._vertex_num = H._vertex_num-1;
-//					}else{
-						H._fanin_vertices_index.put(j, entrantes_j);
-						H._fanout_vertices_index.put(j, salientes_j);
-//					}
-
-//					H._edge_num = H._edge_num -1;
-			//	}
+					H._fanin_vertices_index.put(j, entrantes_j);
+					H._fanout_vertices_index.put(j, salientes_j);
+				}
 
 				//AGREGAR COSTOS
 				Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
@@ -695,7 +679,9 @@ public class Graph implements BaseGraph
 		if (vertex.isTerminalNode())
 			return true;
 		Set<BaseVertex> entrantes = this._fanin_vertices_index.get(vertex.get_id());
-		return entrantes.size() >2;
+		if ((entrantes!=null)&&(entrantes.size()>0))
+			return entrantes.size() >2;
+		return false;
 	}
 
 	public Path getKeyPath(Path camino){

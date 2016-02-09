@@ -20,7 +20,7 @@ public class mor {
 
 		System.out.println("Cargo grafo inicial...");
 		//Cargo grafo desde archivo
-		Graph G = new Graph("data/test_mor_4");
+		Graph G = new Graph("data/test_mor_2");
 		G.export_to_file("data/salidas/G.txt");
 
 		Graph BestSolutionFound = null;
