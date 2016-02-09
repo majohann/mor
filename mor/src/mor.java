@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,37 +17,57 @@ import model.abstracts.BaseVertex;
 
 public class mor {
 
-	public static void main(String[] args) {
-
-		int max_iter = 100;
+	public static void main(String[] args) throws IOException {
 		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
+		
+		System.out.println("Grafos disponibles: ");
+		System.out.println("1:  ");
+		System.out.println("2:  ");
+		System.out.println("3:  ");
+		
+		System.out.print("\nIngrese el número del grafo:  ");
+		BufferedReader buffer_read = new BufferedReader(new InputStreamReader(System.in));
+		String nro_grafo = buffer_read.readLine();
+		
+		System.out.print("Ingrese el número de iteraciones:  ");
+		buffer_read = new BufferedReader(new InputStreamReader(System.in));
 
-		System.out.println("Cargo grafo inicial...");
+		int max_iter = Integer.parseInt(buffer_read.readLine());
+		
+		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
 		//Cargo grafo desde archivo
-		Graph G = new Graph("data/test_mor_2");
-		G.export_to_file("data/salidas/G.txt");
+		Graph G = new Graph("data/test_mor_"+nro_grafo);
+		G.export_to_file("data/salidas/G_"+nro_grafo+".txt");
 
 		Graph BestSolutionFound = null;
-
+		
+		long startTime = System.currentTimeMillis();
+		
 		for (int i=1; i<=max_iter; i++){			
-			System.out.println("Construyo solución inicial...");		
+			//System.out.println("Construyo solución inicial...");		
 			Graph InitialSolution = construir_solucion_inicial(G);
-			InitialSolution.export_to_file("data/salidas/InitialSolution.txt");	
+			InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+".txt");	
 			if (BestSolutionFound==null){
 				BestSolutionFound = InitialSolution.copy_of_graph();
 			}
 
-			System.out.println("Iniciando búsqueda local...");
+			//System.out.println("Iniciando búsqueda local...");
 			Graph LocalSolution = busqueda_local(G, InitialSolution);
-			LocalSolution.export_to_file("data/salidas/LocalSolution.txt");			
+			LocalSolution.export_to_file("data/salidas/LocalSolution_"+nro_grafo+".txt");			
 
 			//comparo los costos de BestSolutionFound y LocalSolution			
 			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){			
 				BestSolutionFound = LocalSolution.copy_of_graph();
 			}		
+			
+			P_ij.clear();
 		}
+		long endTime = System.currentTimeMillis();
+		
+		long totalTime = endTime - startTime;
+		System.out.println("Tiempo de ejecución: " + totalTime + "ms.");
 		System.out.println("Fin.");		
-		BestSolutionFound.export_to_file("data/salidas/BestSolutionFound.txt");
+		BestSolutionFound.export_to_file("data/salidas/BestSolutionFound_"+nro_grafo+".txt");
 	}
 
 	private static Map<Pair<Integer,Integer>,List<Path>> P_ij = new HashMap<Pair<Integer,Integer>, List<Path>>();
@@ -62,9 +86,6 @@ public class mor {
 			}
 		}
 
-		//Creo Pij lista de caminos nodos-disjuntos
-		List<Path> Pij = new ArrayList<Path>();
-
 		//Creo grafo Gsol cuyos nodos son los terminales y no tiene aristas		
 		Graph Gsol = new Graph();
 		Gsol.set_vertex_to_graph(T);	
@@ -72,13 +93,15 @@ public class mor {
 		//seleccionar randomicamente i,j in TxT /mij>0
 		Pair<Integer,Integer> random_ij = get_random_ij(m_ij,T);
 
-		Graph H = G.copy_of_graph();
+		
 		int iter = 0;
 		while ((random_ij!=null) && (iter<30)){ //mientras exista un (i,j) in TxT /mij>0
-			for (Path p : Pij){
-				H = H.grafo_menos_camino(p);
+			Graph H = G.copy_of_graph();
+			if (P_ij.get(random_ij)!=null){
+				for (Path p : P_ij.get(random_ij)){
+					H = H.grafo_menos_camino(p);
+				}
 			}
-
 			Map<Pair<Integer, Integer>, Double> cost_techo = G.get_vertex_pair_weight_index();
 			Map<Pair<Integer, Integer>, Double> Gsol_edges_cost = Gsol.get_vertex_pair_weight_index();
 			if (Gsol_edges_cost==null)
@@ -112,11 +135,14 @@ public class mor {
 				Pair<Integer, Integer> pair_ij = new Pair<Integer, Integer>(i.get_id(),j.get_id());
 
 				int old_mij = m_ij.get(pair_ij);
+				System.out.println(pair_ij.first()+","+pair_ij.second()+"-----"+m_ij.get(pair_ij));
 				if (old_mij-1 == 0){
 					m_ij.remove(pair_ij);
 				}else {
 					m_ij.put(pair_ij,old_mij-1);
 				}
+				
+				
 
 				List<Path> disjoint_node_path_list = P_ij.get(pair_ij);
 				if (disjoint_node_path_list==null){
@@ -124,7 +150,6 @@ public class mor {
 				}
 
 				if (shortest_path.get_weight()==0){
-					Pij.add(shortest_path);	
 					disjoint_node_path_list.add(shortest_path);					
 				}else{
 					Random randomizer = new Random();					
@@ -134,13 +159,14 @@ public class mor {
 					}else {
 						p_random = yens_path.get(randomizer.nextInt(yens_path.size()));
 					}
-					Pij.add(p_random);	
 					disjoint_node_path_list.add(p_random);		
 					Gsol = Gsol.grafo_mas_camino(p_random, G);
 				}
 
 				P_ij.put(pair_ij, new ArrayList<Path>(disjoint_node_path_list));
-			}	
+			}else{
+				System.out.println("No me diste caminos Yen");
+			}
 
 			iter++;
 			random_ij = get_random_ij(m_ij,T);
@@ -162,6 +188,7 @@ public class mor {
 				int random_position = randomizer.nextInt(mij_size);									
 				pair = lista_de_keys.get(random_position);
 			}
+			System.out.println("random_ij: "+pair.first()+","+pair.second());
 			return pair;
 		}
 		return null;		
@@ -249,5 +276,6 @@ public class mor {
 	}
 
 }
+
 
 

@@ -465,13 +465,15 @@ public class Graph implements BaseGraph
 
 				if (entrantes_i!=null){
 					BaseVertex vertex_j = vertices_path.get(indice_lista+1);
-					entrantes_i.remove(vertex_j);
-					salientes_i.remove(vertex_j);
-
+					if (entrantes_i.contains(vertex_j)){
+						entrantes_i.remove(vertex_j);
+						salientes_i.remove(vertex_j);
+	
 						H._fanin_vertices_index.put(i, entrantes_i);
 						H._fanout_vertices_index.put(i, salientes_i);
-
-					H._edge_num = H._edge_num -2;
+	
+						H._edge_num = H._edge_num -1;
+					}
 				}
 
 				//elimino el j de los vertices salientes y entrantes de i
@@ -480,14 +482,18 @@ public class Graph implements BaseGraph
 
 				if (entrantes_j!=null){
 					BaseVertex vertex_i = vertices_path.get(indice_lista);
-					entrantes_j.remove(vertex_i);
-					salientes_j.remove(vertex_i);
-
-					H._fanin_vertices_index.put(j, entrantes_j);
-					H._fanout_vertices_index.put(j, salientes_j);
+					if (entrantes_j.contains(vertex_i)){
+						entrantes_j.remove(vertex_i);
+						salientes_j.remove(vertex_i);
+	
+						H._fanin_vertices_index.put(j, entrantes_j);
+						H._fanout_vertices_index.put(j, salientes_j);
+						
+						H._edge_num = H._edge_num -1;
+					}
 				}
 
-				//AGREGAR COSTOS
+				//SACAMOS COSTOS
 				Pair <Integer, Integer> pair_ij = new Pair<Integer,Integer>(i,j);
 				Pair <Integer, Integer> pair_ji = new Pair<Integer,Integer>(j,i);
 				H._vertex_pair_weight_index.remove(pair_ij);
@@ -644,7 +650,8 @@ public class Graph implements BaseGraph
 					pair_ij=pair_ji;
 					caminos12 = P_ij.get(pair_ji);
 				}
-
+				if (caminos12==null)
+					System.out.println("i: "+indexTerminal1+" j: "+indexTerminal2);
 				for (Path camino:caminos12){
 					List<Path> resultCaminos = nodoCaminos.get(pair_ij);
 					if (keyPath==null){
