@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,18 +20,28 @@ public class mor {
 		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
 		
 		System.out.println("Grafos disponibles: ");
-		System.out.println("1:  ");
-		System.out.println("2:  ");
-		System.out.println("3:  ");
+		System.out.println("1: 7 nodos - 34 aristas - costos 1.");
+		System.out.println("2: 4 nodos - 12 aristas - costos 1.");
+		System.out.println("3: 10 nodos - 90 aristas - costos 1.");
+		System.out.println("4: 7 nodos - 34 aristas - costos variables.");
+		System.out.println("5: 4 nodos - 12 aristas - costos variables.");
+		System.out.println("6: 10 nodos - 90 aristas - costos variables.");
 		
-		System.out.print("\nIngrese el número del grafo:  ");
+		System.out.println("\nIngrese el número del grafo:  ");
+		System.out.print(">  ");
 		BufferedReader buffer_read = new BufferedReader(new InputStreamReader(System.in));
 		String nro_grafo = buffer_read.readLine();
 		
-		System.out.print("Ingrese el número de iteraciones:  ");
+		System.out.println("Nro. de iteraciones para GRASP:  ");
+		System.out.print(">  ");
 		buffer_read = new BufferedReader(new InputStreamReader(System.in));
 
-		int max_iter = Integer.parseInt(buffer_read.readLine());
+		int max_iter_GRASP = Integer.parseInt(buffer_read.readLine());
+		
+		System.out.println("Nro. de iteraciones para la CI:  ");
+		System.out.print(">  ");
+		buffer_read = new BufferedReader(new InputStreamReader(System.in));
+		int max_iter_CI = Integer.parseInt(buffer_read.readLine());
 		
 		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
 		//Cargo grafo desde archivo
@@ -43,9 +52,9 @@ public class mor {
 		
 		long startTime = System.currentTimeMillis();
 		
-		for (int i=1; i<=max_iter; i++){			
+		for (int i=1; i<=max_iter_GRASP; i++){			
 			//System.out.println("Construyo solución inicial...");		
-			Graph InitialSolution = construir_solucion_inicial(G);
+			Graph InitialSolution = construir_solucion_inicial(G,max_iter_CI);
 			InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+".txt");	
 			if (BestSolutionFound==null){
 				BestSolutionFound = InitialSolution.copy_of_graph();
@@ -74,7 +83,7 @@ public class mor {
 
 	private static List<Path> key_path_utilizados = new ArrayList<Path>();
 
-	private static Graph construir_solucion_inicial (Graph G){
+	private static Graph construir_solucion_inicial (Graph G, int max_iter_CI){
 		//Cargo nodos terminales (después deberíamos cargarlos desde un archivo)(por ahora harcodeado)
 		List<Integer> T = G.getNodos_terminales();
 
@@ -95,7 +104,7 @@ public class mor {
 
 		
 		int iter = 0;
-		while ((random_ij!=null) && (iter<30)){ //mientras exista un (i,j) in TxT /mij>0
+		while ((random_ij!=null) && (iter<max_iter_CI)){ //mientras exista un (i,j) in TxT /mij>0
 			Graph H = G.copy_of_graph();
 			if (P_ij.get(random_ij)!=null){
 				for (Path p : P_ij.get(random_ij)){
@@ -135,7 +144,7 @@ public class mor {
 				Pair<Integer, Integer> pair_ij = new Pair<Integer, Integer>(i.get_id(),j.get_id());
 
 				int old_mij = m_ij.get(pair_ij);
-				System.out.println(pair_ij.first()+","+pair_ij.second()+"-----"+m_ij.get(pair_ij));
+				//System.out.println(pair_ij.first()+","+pair_ij.second()+"-----"+m_ij.get(pair_ij));
 				if (old_mij-1 == 0){
 					m_ij.remove(pair_ij);
 				}else {
@@ -188,7 +197,7 @@ public class mor {
 				int random_position = randomizer.nextInt(mij_size);									
 				pair = lista_de_keys.get(random_position);
 			}
-			System.out.println("random_ij: "+pair.first()+","+pair.second());
+			//System.out.println("random_ij: "+pair.first()+","+pair.second());
 			return pair;
 		}
 		return null;		
