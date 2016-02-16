@@ -62,7 +62,7 @@ public class mor {
 
 			//System.out.println("Iniciando búsqueda local...");
 			Graph LocalSolution = busqueda_local(G, InitialSolution);
-			LocalSolution.export_to_file("data/salidas/LocalSolution_"+nro_grafo+".txt");			
+			LocalSolution.export_to_file("data/salidas/LocalSolution_"+nro_grafo+"_"+i+".txt");			
 
 			//comparo los costos de BestSolutionFound y LocalSolution			
 			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){			

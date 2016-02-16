@@ -195,6 +195,8 @@ public class Graph implements BaseGraph
 					} catch (NumberFormatException e){
 						//encontro a los terminales
 						for (int i = 1; i<str_list.length; i++){
+							BaseVertex v = this.get_vertex(Integer.parseInt(str_list[i]));
+							v.set_terminales(true);
 							nodos_terminales.add(Integer.parseInt(str_list[i]));
 						}
 					}
@@ -391,6 +393,7 @@ public class Graph implements BaseGraph
 			v_nuevo.set_id(v.get_id());
 			v_nuevo.set_terminales(v.isTerminalNode());
 			v_nuevo.set_weight(v.get_weight());
+			v_nuevo.set_terminales(v.isTerminalNode());
 			copy._vertex_list.add(v_nuevo);
 
 		}
@@ -702,7 +705,7 @@ public class Graph implements BaseGraph
 			keyPath.push_vertex(v);
 			if (first){
 				first = false;
-			} else if (isKeyNode(v)){	
+			} else if (isKeyNode(v)){
 				return keyPath;
 			}
 		}
