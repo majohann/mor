@@ -97,8 +97,8 @@ public class Graph implements BaseGraph
 	 */
 	public Graph(final String data_file_name)
 	{
-		//import_from_file(data_file_name);
-		import_from_file_pruebas(data_file_name);
+		import_from_file(data_file_name);
+		//import_from_file_pruebas(data_file_name);
 	}
 
 	/**
@@ -457,6 +457,10 @@ public class Graph implements BaseGraph
 		return _vertex_num;
 
 	}
+	
+	public boolean isTerminalNode(BaseVertex v){
+		return nodos_terminales.contains(v.get_id());
+	}
 
 	public Graph copy_of_graph (){
 		Graph copy = new Graph();
@@ -466,7 +470,7 @@ public class Graph implements BaseGraph
 		for (BaseVertex v: _vertex_list){
 			BaseVertex v_nuevo = new Vertex();
 			v_nuevo.set_id(v.get_id());
-			v_nuevo.set_terminales(nodos_terminales.contains(v.get_id()));//setea si el nodo es terminal
+			v_nuevo.set_terminales(isTerminalNode(v));//setea si el nodo es terminal
 			v_nuevo.set_weight(v.get_weight());
 			copy._vertex_list.add(v_nuevo);
 
@@ -480,7 +484,7 @@ public class Graph implements BaseGraph
 			for (BaseVertex v: set_vertex){
 				BaseVertex v_nuevo = new Vertex();
 				v_nuevo.set_id(v.get_id());
-				v_nuevo.set_terminales(nodos_terminales.contains(v.get_id()));//setea si el nodo es terminal
+				v_nuevo.set_terminales(isTerminalNode(v));//setea si el nodo es terminal
 				v_nuevo.set_weight(v.get_weight());
 				set_vertex_nuevo.add(v_nuevo);				
 			}
@@ -495,7 +499,7 @@ public class Graph implements BaseGraph
 			for (BaseVertex v: set_vertex){
 				BaseVertex v_nuevo = new Vertex();
 				v_nuevo.set_id(v.get_id());
-				v_nuevo.set_terminales(nodos_terminales.contains(v.get_id()));//setea si el nodo es terminal
+				v_nuevo.set_terminales(isTerminalNode(v));//setea si el nodo es terminal
 				v_nuevo.set_weight(v.get_weight());
 				set_vertex_nuevo.add(v_nuevo);				
 			}
@@ -508,7 +512,7 @@ public class Graph implements BaseGraph
 			BaseVertex v =  _id_vertex_index.get(i);
 			BaseVertex v_nuevo = new Vertex(); 
 			v_nuevo.set_id(v.get_id());
-			v_nuevo.set_terminales(nodos_terminales.contains(v.get_id()));//setea si el nodo es terminal
+			v_nuevo.set_terminales(isTerminalNode(v));//setea si el nodo es terminal
 			v_nuevo.set_weight(v.get_weight());			
 			copy._id_vertex_index.put(i, v_nuevo);
 		}
@@ -760,7 +764,7 @@ public class Graph implements BaseGraph
 	}
 
 	public boolean isKeyNode(BaseVertex vertex){
-		if (nodos_terminales.contains(vertex.get_id())) //el nodo es terminal?
+		if (isTerminalNode(vertex)) //el nodo es terminal?
 			return true;
 		Set<BaseVertex> entrantes = this._fanin_vertices_index.get(vertex.get_id());
 		if ((entrantes!=null)&&(entrantes.size()>0))
