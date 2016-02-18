@@ -98,6 +98,7 @@ public class Graph implements BaseGraph
 	public Graph(final String data_file_name)
 	{
 		import_from_file(data_file_name);
+		//import_from_file_pruebas(data_file_name);
 	}
 
 	/**
@@ -200,6 +201,108 @@ public class Graph implements BaseGraph
 							nodos_terminales.add(Integer.parseInt(str_list[i]));
 						}
 					}
+				}
+				//
+				line = bufRead.readLine();
+			}
+			bufRead.close();
+
+		}catch (IOException e)
+		{
+			// If another exception is generated, print a stack trace
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void import_from_file_pruebas(final String data_file_name)
+	{
+		// 0. Clear the variables 
+		clear();
+
+		try
+		{
+			// 1. read the file and put the content in the buffer
+			FileReader input = new FileReader(data_file_name);
+			BufferedReader bufRead = new BufferedReader(input);
+
+			boolean is_first_line = true;
+			String line; 	// String that holds current file line
+
+			// 2. Read first line
+			line = bufRead.readLine();
+			while(line != null)
+			{
+				// 2.1 skip the empty line
+				if(line.trim().equals("")) 
+				{
+					line = bufRead.readLine();
+					continue;
+				}
+
+				//proceso vertices
+				if(is_first_line)
+				{
+					String[] str_list = line.trim().split("\\s");
+					
+					while ((str_list!=null)&&(!str_list[0].equals("Nodes"))){
+						line = bufRead.readLine();
+						str_list = line.trim().split("\\s");
+					}
+					//2.2.1 obtain the number of nodes in the graph 
+
+					is_first_line = false;
+					_vertex_num = Integer.parseInt(str_list[1]);
+					for(int i=0; i<_vertex_num; ++i)
+					{
+						BaseVertex vertex = new Vertex();
+						vertex.set_terminales(false);
+						_vertex_list.add(vertex);
+						_id_vertex_index.put(vertex.get_id(), vertex);
+					}
+
+				}else {
+					String[] str_list = line.trim().split("\\s");
+					boolean primera_linea_aristas=true;
+					boolean primera_linea_terminales=true;
+					if ((str_list!=null)&&(str_list[0].equals("Edges"))){
+						//Proceso aristas
+						int num_aristas = 0;
+						if (primera_linea_aristas){
+							line = bufRead.readLine();
+							str_list = line.trim().split("\\s");
+							primera_linea_aristas=false;
+							num_aristas = Integer.parseInt(str_list[1]);
+							_edge_num=num_aristas*2;
+						}
+						for (int i = 0; i<num_aristas; i++){
+							int start_vertex_id = Integer.parseInt(str_list[1])-1;
+							int end_vertex_id = Integer.parseInt(str_list[2])-1;
+							double weight = Double.parseDouble(str_list[3]);
+							add_edge(start_vertex_id, end_vertex_id, weight);
+							line = bufRead.readLine();
+							str_list = line.trim().split("\\s");
+						}
+					}else if ((str_list!=null)&&(str_list[0].equals("Terminals"))){
+						//encontro a los terminales
+						int nro_terminales = 0;
+						if (primera_linea_terminales){							
+							primera_linea_terminales=false;
+							nro_terminales = Integer.parseInt(str_list[1]);
+							line = bufRead.readLine();
+							str_list = line.trim().split("\\s");
+						}
+						for (int i = 0; i<nro_terminales; i++){
+							str_list = line.trim().split("\\s");
+							try{
+								nodos_terminales.add(Integer.parseInt(str_list[1]));
+							}catch (Exception e){
+								System.out.println("");
+							}
+							line = bufRead.readLine();
+							
+						}
+					}					
 				}
 				//
 				line = bufRead.readLine();
@@ -391,9 +494,8 @@ public class Graph implements BaseGraph
 		for (BaseVertex v: _vertex_list){
 			BaseVertex v_nuevo = new Vertex();
 			v_nuevo.set_id(v.get_id());
-			v_nuevo.set_terminales(v.isTerminalNode());
+			v_nuevo.set_terminales(nodos_terminales.contains(v.get_id()));//setea si el nodo es terminal
 			v_nuevo.set_weight(v.get_weight());
-			v_nuevo.set_terminales(v.isTerminalNode());
 			copy._vertex_list.add(v_nuevo);
 
 		}
@@ -406,7 +508,7 @@ public class Graph implements BaseGraph
 			for (BaseVertex v: set_vertex){
 				BaseVertex v_nuevo = new Vertex();
 				v_nuevo.set_id(v.get_id());
-				v_nuevo.set_terminales(v.isTerminalNode());
+				v_nuevo.set_terminales(nodos_terminales.contains(v.get_id()));//setea si el nodo es terminal
 				v_nuevo.set_weight(v.get_weight());
 				set_vertex_nuevo.add(v_nuevo);				
 			}
@@ -421,7 +523,7 @@ public class Graph implements BaseGraph
 			for (BaseVertex v: set_vertex){
 				BaseVertex v_nuevo = new Vertex();
 				v_nuevo.set_id(v.get_id());
-				v_nuevo.set_terminales(v.isTerminalNode());
+				v_nuevo.set_terminales(nodos_terminales.contains(v.get_id()));//setea si el nodo es terminal
 				v_nuevo.set_weight(v.get_weight());
 				set_vertex_nuevo.add(v_nuevo);				
 			}
@@ -434,7 +536,7 @@ public class Graph implements BaseGraph
 			BaseVertex v =  _id_vertex_index.get(i);
 			BaseVertex v_nuevo = new Vertex(); 
 			v_nuevo.set_id(v.get_id());
-			v_nuevo.set_terminales(v.isTerminalNode());
+			v_nuevo.set_terminales(nodos_terminales.contains(v.get_id()));//setea si el nodo es terminal
 			v_nuevo.set_weight(v.get_weight());			
 			copy._id_vertex_index.put(i, v_nuevo);
 		}
@@ -686,7 +788,7 @@ public class Graph implements BaseGraph
 	}
 
 	public boolean isKeyNode(BaseVertex vertex){
-		if (vertex.isTerminalNode())
+		if (nodos_terminales.contains(vertex.get_id())) //el nodo es terminal?
 			return true;
 		Set<BaseVertex> entrantes = this._fanin_vertices_index.get(vertex.get_id());
 		if ((entrantes!=null)&&(entrantes.size()>0))
