@@ -279,7 +279,8 @@ public class Graph implements BaseGraph
 							int start_vertex_id = Integer.parseInt(str_list[1])-1;
 							int end_vertex_id = Integer.parseInt(str_list[2])-1;
 							double weight = Double.parseDouble(str_list[3]);
-							add_edge(start_vertex_id, end_vertex_id, weight);
+							add_edge(start_vertex_id, end_vertex_id, weight); //agrego arista (i,j)
+							add_edge(end_vertex_id, start_vertex_id, weight); //agrego arista (j,i)
 							line = bufRead.readLine();
 							str_list = line.trim().split("\\s");
 						}
