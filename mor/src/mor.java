@@ -27,7 +27,7 @@ public class mor {
 		System.out.println("5: 4 nodos - 12 aristas - costos variables.");
 		System.out.println("6: 10 nodos - 90 aristas - costos variables.");
 		
-		System.out.println("\nIngrese el número del grafo:  ");
+		System.out.println("\nIngrese el n�mero del grafo:  ");
 		System.out.print(">  ");
 		BufferedReader buffer_read = new BufferedReader(new InputStreamReader(System.in));
 		String nro_grafo = buffer_read.readLine();
@@ -45,10 +45,10 @@ public class mor {
 		
 		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
 		//Cargo grafo desde archivo
-		Graph G = new Graph("data/test_mor_"+nro_grafo);
-		//Graph G = new Graph("data/c03.stp");
-		G.export_to_file("data/salidas/G_"+nro_grafo+".txt");
-		//G.export_to_file("data/salidas/G_c03.stp.txt");
+		//Graph G = new Graph("data/test_mor_"+nro_grafo);
+		Graph G = new Graph("data/c03.stp");
+		//G.export_to_file("data/salidas/G_"+nro_grafo+".txt");
+		G.export_to_file("data/salidas/G_c03.stp.txt");
 
 		Graph BestSolutionFound = null;
 		
@@ -57,8 +57,8 @@ public class mor {
 		for (int i=1; i<=max_iter_GRASP; i++){			
 			//System.out.println("Construyo solución inicial...");		
 			Graph InitialSolution = construir_solucion_inicial(G,max_iter_CI);
-			InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+".txt");	
-			//InitialSolution.export_to_file("data/salidas/InitialSolution_c03.stp.txt");
+			//InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+".txt");	
+			InitialSolution.export_to_file("data/salidas/InitialSolution_c03.stp.txt");
 			if (BestSolutionFound==null){
 				BestSolutionFound = InitialSolution.copy_of_graph();
 			}
