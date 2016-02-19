@@ -678,9 +678,14 @@ public class Graph implements BaseGraph
 		return _vertex_pair_weight_index_nuevo;
 	}
 
-	public void set_vertex_pair_weight_index(
-			Map<Pair<Integer, Integer>, Double> _vertex_pair_weight_index) {
-		this._vertex_pair_weight_index = new HashMap<Pair<Integer,Integer>, Double>(_vertex_pair_weight_index);
+	public void set_vertex_pair_weight_index(Map<Pair<Integer, Integer>, Double> _vertex_pair_weight_index) {
+		Set<Pair<Integer,Integer>> set_viejo = _vertex_pair_weight_index.keySet();
+		for (Pair<Integer,Integer> p: set_viejo){
+			if (this._vertex_pair_weight_index==null)
+				this._vertex_pair_weight_index = new HashMap<Pair<Integer,Integer>, Double>();
+			Double d_viejo = new Double(_vertex_pair_weight_index.get(p));
+			this._vertex_pair_weight_index.put(p, d_viejo);
+		}		
 	}
 
 	public boolean isGraphEdge (Pair<Integer,Integer> edge){		

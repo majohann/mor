@@ -17,7 +17,7 @@ import model.abstracts.BaseVertex;
 public class mor {
 
 	public static void main(String[] args) throws IOException {
-		System.out.println("MetaheurÃ­sticas y OptimizaciÃ³n sobre Redes - 2015\n");
+		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
 		
 		System.out.println("Grafos disponibles: ");
 		System.out.println("1: 7 nodos - 34 aristas - costos 1.");
@@ -43,7 +43,7 @@ public class mor {
 		buffer_read = new BufferedReader(new InputStreamReader(System.in));
 		int max_iter_CI = Integer.parseInt(buffer_read.readLine());
 		
-		System.out.println("Cargo grafo inicial nÃºmero "+nro_grafo+"...");
+		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
 		//Cargo grafo desde archivo
 		Graph G = new Graph("data/test_mor_"+nro_grafo);
 		//Graph G = new Graph("data/c03.stp");
@@ -57,13 +57,13 @@ public class mor {
 		for (int i=1; i<=max_iter_GRASP; i++){			
 			//System.out.println("Construyo soluciÃ³n inicial...");		
 			Graph InitialSolution = construir_solucion_inicial(G,max_iter_CI);
-			InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+".txt");	
+			InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+"_"+i+".txt");	
 			//InitialSolution.export_to_file("data/salidas/InitialSolution_c03.stp.txt");
 			if (BestSolutionFound==null){
 				BestSolutionFound = InitialSolution.copy_of_graph();
 			}
 
-			//System.out.println("Iniciando bÃºsqueda local...");
+			//System.out.println("Iniciando búsqueda local...");
 			Graph LocalSolution = busqueda_local(G, InitialSolution);
 			LocalSolution.export_to_file("data/salidas/LocalSolution_"+nro_grafo+"_"+i+".txt");
 
@@ -147,7 +147,7 @@ public class mor {
 				Pair<Integer, Integer> pair_ij = new Pair<Integer, Integer>(i.get_id(),j.get_id());
 
 				int old_mij = m_ij.get(pair_ij);
-				//System.out.println(pair_ij.first()+","+pair_ij.second()+"-----"+m_ij.get(pair_ij));
+				System.out.println(pair_ij.first()+","+pair_ij.second()+"-----"+m_ij.get(pair_ij));
 				if (old_mij-1 == 0){
 					m_ij.remove(pair_ij);
 				}else {
@@ -177,7 +177,7 @@ public class mor {
 
 				P_ij.put(pair_ij, new ArrayList<Path>(disjoint_node_path_list));
 			}else{
-				System.out.println("No me diste caminos Yen");
+				//System.out.println("No me diste caminos Yen");
 			}
 
 			iter++;
@@ -257,7 +257,8 @@ public class mor {
 				//obtener p_barra el camino mas corto de u a v en h techo
 				DijkstraShortestPathAlg dijkstra = new DijkstraShortestPathAlg(H_techo);
 				Path p_barra = dijkstra.get_shortest_path(u, v);
-				Gsol = Gsol_menos_p_techo.grafo_mas_camino(p_barra, G);
+				Gsol_menos_p_techo = Gsol_menos_p_techo.grafo_mas_camino(p_barra, G);
+				Gsol = Gsol_menos_p_techo.copy_of_graph();
 
 				//Actualizar los Pij para todo ij perteneciente a x_p_techo
 				for (Pair<Integer,Integer> ij:Xp_techo){
