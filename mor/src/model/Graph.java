@@ -742,12 +742,17 @@ public class Graph implements BaseGraph
 					List<Path> resultCaminos = nodoCaminos.get(pair_ij);
 					if (keyPath==null){
 						keyPath = getKeyPath(camino); //Devuelve el primer key-path dentro de camino
-						if ((keyPath!=null)&& (!lista_caminos_keypath.contains(keyPath))){
-							if (resultCaminos == null){
-								resultCaminos = new ArrayList<Path>();
+						if ((!lista_caminos_keypath.contains(keyPath))){
+							if ((keyPath!=null)){
+								if (resultCaminos == null){
+									resultCaminos = new ArrayList<Path>();
+								}
+								resultCaminos.add(camino);
 							}
-							resultCaminos.add(camino);
-						}								
+						}
+						else{
+							keyPath = null;
+						}										
 					}
 					else{
 						if (camino.path_contains_path(keyPath)){ //veo si el camino contiene el keypath
