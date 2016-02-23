@@ -134,11 +134,11 @@ public class mor {
 			List<Path> yens_path = yen.get_shortest_paths(H.get_vertex(random_ij.first()),H.get_vertex(random_ij.second()), 3);
 
 			if ((yens_path!=null)&&(yens_path.size()>0)){
-				int min_size = Integer.MAX_VALUE;
+				double min_size = Integer.MAX_VALUE;
 				Path shortest_path = null; 
 
 				for (Path p : yens_path){ //ROBLEDO ARREGLAR FERNANDA TO DO ESTO NO ESTA BIEN, NO ES POR CANTIDAD DE VERTICES ES POR COSTO DE ARISTAS!!!!
-					int p_size = p.get_vertices().size();
+					double p_size = p.get_weight();
 					if (p_size<min_size){
 						min_size = p_size;
 						shortest_path = p;
