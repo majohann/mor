@@ -45,10 +45,10 @@ public class mor {
 		
 		System.out.println("Cargo grafo inicial n�mero "+nro_grafo+"...");
 		//Cargo grafo desde archivo
-		Graph G = new Graph("data/test_mor_"+nro_grafo);
-		//Graph G = new Graph("data/c03.stp");
+		//Graph G = new Graph("data/test_mor_"+nro_grafo);
+		Graph G = new Graph("data/p401.stp");
 		//G.export_to_file("data/salidas/G_"+nro_grafo+".txt");
-		//G.export_to_file("data/salidas/G_c03.stp.txt");
+		G.export_to_file("data/salidas/p401.stp.txt");
 
 		Graph BestSolutionFound = null;
 		
@@ -57,7 +57,7 @@ public class mor {
 		for (int i=1; i<=max_iter_GRASP; i++){			
 			//System.out.println("Construyo solución inicial...");		
 			Graph InitialSolution = construir_solucion_inicial(G,max_iter_CI);
-			//InitialSolution.export_to_file("data/salidas/InitialSolution_c03.stp.txt");
+			InitialSolution.export_to_file("data/salidas/InitialSolution_c03.stp.txt");
 			if (InitialSolution==null) {
 				P_ij.clear();
 				continue;
