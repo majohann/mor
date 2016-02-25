@@ -47,9 +47,9 @@ public class Path implements BaseElementWithWeight
 {
 	List<BaseVertex> _vertex_list = new Vector<BaseVertex>();
 	double _weight = -1;
-	
+
 	public Path(){};
-	
+
 	public Path(List<BaseVertex> _vertex_list, double _weight)
 	{
 		this._vertex_list = _vertex_list;
@@ -60,19 +60,19 @@ public class Path implements BaseElementWithWeight
 	{
 		return _weight;
 	}
-	
+
 	public void set_weight(double weight)
 	{
 		_weight = weight;
 	}
-	
+
 	public List<BaseVertex> get_vertices()
 	{
 		return _vertex_list;
 	}
-	
-	
-	
+
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -95,16 +95,16 @@ public class Path implements BaseElementWithWeight
 	{
 		return _vertex_list.hashCode();
 	}
-	
+
 	public String toString()
 	{
 		return _vertex_list.toString();//+":"+_weight;
 	}
-	
+
 	public boolean path_contains_path (Path path){
 		List<BaseVertex> p_vertex_list = path._vertex_list;
 		if ((_vertex_list!=null) && (_vertex_list.size()>0) && (p_vertex_list!=null) && (p_vertex_list.size()>0)){
-			
+
 			int indice_comienzo = 0;
 			Iterator<BaseVertex> it = _vertex_list.iterator();
 			boolean encontre_comienzo = false;
@@ -116,7 +116,7 @@ public class Path implements BaseElementWithWeight
 					indice_comienzo++;
 				}
 			}
-			
+
 			if (encontre_comienzo){
 				int indice_p = 0;
 				boolean caminos_iguales = true;
@@ -132,19 +132,31 @@ public class Path implements BaseElementWithWeight
 					return false;
 				return caminos_iguales;
 			}
-			return false;
-			
+			return false;			
 		}
 		return false;
 	}
-	
+
+	public Path invertirPath(){
+		Path path_invertida = new Path();
+		if (_vertex_list!=null){
+			List<BaseVertex> lista_vertices = _vertex_list;
+			List<BaseVertex> lista_vertices_invertida = new ArrayList<BaseVertex>();
+			for (BaseVertex v : lista_vertices){
+				lista_vertices_invertida.add(0, v);
+			}
+			path_invertida.setVertexList(lista_vertices_invertida);
+		}
+		return path_invertida;
+	}
+
 	public void setVertexList (List<BaseVertex> lista){
 		_vertex_list = new ArrayList<BaseVertex>(lista);
 	}
-	
+
 	public void push_vertex(BaseVertex v){
 		_vertex_list.add(v);
 	}
-	
-	
+
+
 }

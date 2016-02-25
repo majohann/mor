@@ -17,7 +17,7 @@ import model.abstracts.BaseVertex;
 public class mor {
 
 	public static void main(String[] args) throws IOException {
-		System.out.println("Metaheur�sticas y Optimizaci�n sobre Redes - 2015\n");
+		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
 		
 		System.out.println("Grafos disponibles: ");
 		System.out.println("1: 7 nodos - 34 aristas - costos 1.");
@@ -27,7 +27,7 @@ public class mor {
 		System.out.println("5: 4 nodos - 12 aristas - costos variables.");
 		System.out.println("6: 10 nodos - 90 aristas - costos variables.");
 		
-		System.out.println("\nIngrese el n�mero del grafo:  ");
+		System.out.println("\nIngrese el número del grafo:  ");
 		System.out.print(">  ");
 		BufferedReader buffer_read = new BufferedReader(new InputStreamReader(System.in));
 		String nro_grafo = buffer_read.readLine();
@@ -43,21 +43,20 @@ public class mor {
 		buffer_read = new BufferedReader(new InputStreamReader(System.in));
 		int max_iter_CI = Integer.parseInt(buffer_read.readLine());
 		
-		System.out.println("Cargo grafo inicial n�mero "+nro_grafo+"...");
+		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
 		//Cargo grafo desde archivo
 		//Graph G = new Graph("data/test_mor_"+nro_grafo);
-		Graph G = new Graph("data/p401.stp");
+		Graph G = new Graph("data/Grafo_15_ci.stp");
 		//G.export_to_file("data/salidas/G_"+nro_grafo+".txt");
-		G.export_to_file("data/salidas/p401.stp.txt");
+		G.export_to_file("data/salidas/Grafo_15_ci.stp.txt");
 
 		Graph BestSolutionFound = null;
 		
 		long startTime = System.currentTimeMillis();
 		
 		for (int i=1; i<=max_iter_GRASP; i++){			
-			//System.out.println("Construyo solución inicial...");		
+			//System.out.println("Construyo soluciÃ³n inicial...");		
 			Graph InitialSolution = construir_solucion_inicial(G,max_iter_CI);
-			InitialSolution.export_to_file("data/salidas/InitialSolution_c03.stp.txt");
 			if (InitialSolution==null) {
 				P_ij.clear();
 				continue;
@@ -67,12 +66,13 @@ public class mor {
 				BestSolutionFound = InitialSolution.copy_of_graph();
 			}
 
-			//System.out.println("Iniciando b�squeda local...");
+			//System.out.println("Iniciando bï¿½squeda local...");
 			Graph LocalSolution = busqueda_local(G, InitialSolution);
 			//LocalSolution.export_to_file("data/salidas/LocalSolution_"+nro_grafo+"_"+i+".txt");
 
 			//comparo los costos de BestSolutionFound y LocalSolution			
-			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){			
+			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){	
+				InitialSolution.export_to_file("data/salidas/InitialSolution_Grafo_15.stp.txt");			
 				BestSolutionFound = LocalSolution.copy_of_graph();
 			}		
 			
@@ -91,7 +91,7 @@ public class mor {
 	private static List<Path> key_path_utilizados = new ArrayList<Path>();
 
 	private static Graph construir_solucion_inicial (Graph G, int max_iter_CI){
-		//Cargo nodos terminales (después deberíamos cargarlos desde un archivo)(por ahora harcodeado)
+		//Cargo nodos terminales (despuÃ©s deberÃ­amos cargarlos desde un archivo)(por ahora harcodeado)
 		List<Integer> T = G.getNodos_terminales();
 
 		Map<Pair<Integer, Integer>, Integer> m_ij = new HashMap<Pair<Integer,Integer>, Integer>();
@@ -137,7 +137,7 @@ public class mor {
 				double min_size = Integer.MAX_VALUE;
 				Path shortest_path = null; 
 
-				for (Path p : yens_path){ //ROBLEDO ARREGLAR FERNANDA TO DO ESTO NO ESTA BIEN, NO ES POR CANTIDAD DE VERTICES ES POR COSTO DE ARISTAS!!!!
+				for (Path p : yens_path){ 
 					double p_size = p.get_weight();
 					if (p_size<min_size){
 						min_size = p_size;
@@ -151,7 +151,7 @@ public class mor {
 				Pair<Integer, Integer> pair_ij = new Pair<Integer, Integer>(i.get_id(),j.get_id());
 
 				int old_mij = m_ij.get(pair_ij);
-				System.out.println(pair_ij.first()+","+pair_ij.second()+"-----"+m_ij.get(pair_ij));
+				//System.out.println(pair_ij.first()+","+pair_ij.second()+"-----"+m_ij.get(pair_ij));
 				if (old_mij-1 <= 0){
 					m_ij.remove(pair_ij);
 				}else {
@@ -182,7 +182,7 @@ public class mor {
 				P_ij.put(pair_ij, new ArrayList<Path>(disjoint_node_path_list));
 			}else{
 				System.out.println("No me diste caminos Yen");
-				System.out.println("random_ij es " + random_ij.first() + " - " + random_ij.second());
+				//System.out.println("random_ij es " + random_ij.first() + " - " + random_ij.second());
 				//System.out.println("Aristas de H: " + H.)
 				return null;
 			}
@@ -197,9 +197,9 @@ public class mor {
 		//selecciono primer par i,j in T que cumpla mij>0
 		if ((m_ij != null) && (m_ij.size()>0)){
 			 Entry<Pair<Integer, Integer>, Integer> entry=m_ij.entrySet().iterator().next();
-			 Pair<Integer,Integer> key= entry.getKey();
-			 Integer value=entry.getValue();
-			System.out.println("pair (" + key.first() +", " + key.second()+") mij:" + value);
+			// Pair<Integer,Integer> key= entry.getKey();
+			 //Integer value=entry.getValue();
+			//System.out.println("pair (" + key.first() +", " + key.second()+") mij:" + value);
 			
 			Random randomizer = new Random();					
 
@@ -223,14 +223,15 @@ public class mor {
 	private static Graph busqueda_local(Graph G, Graph InitialSolution){
 		Graph best_Gsol = InitialSolution.copy_of_graph();
 		Graph Gsol = InitialSolution.copy_of_graph();
-		int max_iter=50;
+		int max_iter=50; //ROBLEDO MOR TO DO 
 
 		do{			
 			//Obtener keypath y la lista de caminos que lo contienen
 			Pair<Path,Map<Pair<Integer,Integer>,List<Path>>> lista_caminos_keypath = Gsol.getKeyPathFromGraph(P_ij, key_path_utilizados); //sigue devolviendo keypaths ya usados
 			if (lista_caminos_keypath!=null){
 				Path p_techo = lista_caminos_keypath.first();
-
+				if (p_techo.get_vertices().size()>2)
+					System.out.println("");
 				key_path_utilizados.add(p_techo);
 				Map<Pair<Integer,Integer>,List<Path>> par_nodos_caminos = lista_caminos_keypath.second();
 
@@ -255,7 +256,7 @@ public class mor {
 				for (Entry<Pair<Integer, Integer>, Double> entry : Gsol_menosp_edges_cost.entrySet()) {
 					Pair<Integer, Integer> pair = entry.getKey();			    
 					cost_techo.put(pair, (double) 0);			    
-				}
+				}	
 
 				H_techo.set_vertex_pair_weight_index(cost_techo);
 
@@ -276,7 +277,8 @@ public class mor {
 				Path p_barra = dijkstra.get_shortest_path(u, v);
 				Gsol_menos_p_techo = Gsol_menos_p_techo.grafo_mas_camino(p_barra, G);
 				Gsol = Gsol_menos_p_techo.copy_of_graph();
-
+				
+				
 				//Actualizar los Pij para todo ij perteneciente a x_p_techo
 				for (Pair<Integer,Integer> ij:Xp_techo){
 					//recorro caminos que devuelve el getkeypathfromgraph 

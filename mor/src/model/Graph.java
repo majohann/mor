@@ -120,7 +120,10 @@ public class Graph implements BaseGraph
 	/**
 	 * Default constructor 
 	 */
-	public Graph(){};
+	public Graph(){
+		_edge_num=0;
+		_vertex_num=0;
+	};
 
 	/**
 	 * Clear members of the graph.
@@ -224,7 +227,7 @@ public class Graph implements BaseGraph
 			// 1. read the file and put the content in the buffer
 			FileReader input = new FileReader(data_file_name);
 			BufferedReader bufRead = new BufferedReader(input);
-			
+
 			String line; 	// String that holds current file line
 
 			// 2. Read first line
@@ -249,7 +252,7 @@ public class Graph implements BaseGraph
 							}							
 						}else if (str_list[0].equals("Edges")){
 							int num_aristas = Integer.parseInt(str_list[1]);
-							_edge_num = num_aristas*2; //pq es no dirigido
+							//int cant_aristas = num_aristas*2; //pq es no dirigido
 							line = bufRead.readLine();
 							str_list = line.trim().split("\\s");
 							for (int i=0; i<num_aristas; i++){
@@ -269,7 +272,7 @@ public class Graph implements BaseGraph
 							str_list = line.trim().split("\\s");
 							for (int i=0; i<cant_terminales; i++){
 								if ((str_list!=null)&&(str_list[0].equals("T"))){
-									nodos_terminales.add(Integer.parseInt(str_list[1]));
+									nodos_terminales.add(Integer.parseInt(str_list[1])-1);
 								}	
 								line = bufRead.readLine();
 								str_list = line.trim().split("\\s");
@@ -457,7 +460,7 @@ public class Graph implements BaseGraph
 		return _vertex_num;
 
 	}
-	
+
 	public boolean isTerminalNode(BaseVertex v){
 		return nodos_terminales.contains(v.get_id());
 	}
@@ -755,7 +758,8 @@ public class Graph implements BaseGraph
 						}										
 					}
 					else{
-						if (camino.path_contains_path(keyPath)){ //veo si el camino contiene el keypath
+						Path keyPath_invertida = keyPath.invertirPath();
+						if (camino.path_contains_path(keyPath)||(camino.path_contains_path(keyPath_invertida))){ //veo si el camino contiene el keypath
 							if (resultCaminos == null){
 								resultCaminos = new ArrayList<Path>();
 							}
@@ -811,6 +815,29 @@ public class Graph implements BaseGraph
 			}
 		}
 		return costo;
+	}
+
+	public int get_edge_num() {
+		return _edge_num;
+	}
+
+	public void set_edge_num(int _edge_num) {
+		this._edge_num = _edge_num;
+	}
+
+
+	public boolean esGrafoFactible(BaseVertex u, BaseVertex v){
+		if (isTerminalNode(_id_vertex_index.get(u))){
+			Set<BaseVertex> set_vertex = _fanin_vertices_index.get(u.get_id());
+			if (set_vertex.size()<3)
+				return false;
+		}
+		if (isTerminalNode(_id_vertex_index.get(v))){
+			Set<BaseVertex> set_vertex = _fanin_vertices_index.get(v.get_id());
+			if (set_vertex.size()<3)
+				return false;
+		}
+		return true;
 	}
 
 }
