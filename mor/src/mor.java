@@ -2,7 +2,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -322,7 +324,7 @@ public class mor {
 					for (Path camino:pij){
 						if (camino.path_contains_path(p_techo)){							
 							P_ij.get(ij).remove(camino);
-							List<BaseVertex> vertices =  camino.get_vertices();
+							List<BaseVertex> vertices =  camino.get_vertices();							
 							int indice = vertices.indexOf(u);
 							vertices.removeAll(p_techo.get_vertices());
 							if (indice>vertices.size()){
@@ -330,6 +332,17 @@ public class mor {
 							}else {
 								vertices.addAll(indice, p_barra.get_vertices());
 							}
+							
+							//Lo que hago acá es ver cuantas ocurrencias hay de cada vertice en el camino 
+							//luego de sustituir p_techo por p_barra. Si no hay ciclos se realiza la sustitución
+							//si no se sigue con la siguiente iteración.
+							Set<BaseVertex> set_vertices = new HashSet<BaseVertex>(vertices);
+					        for (BaseVertex vertex : set_vertices) {
+					            int cant_ocurrencias = Collections.frequency(vertices, vertex);
+					            if (cant_ocurrencias>0){
+					            	continue;
+					            }
+					        }
 							camino.setVertexList(vertices);
 							P_ij.get(ij).add(camino);
 						}
