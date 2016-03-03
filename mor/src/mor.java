@@ -39,15 +39,15 @@ public class mor {
 		buffer_read = new BufferedReader(new InputStreamReader(System.in));
 
 		int max_iter = Integer.parseInt(buffer_read.readLine());*/
-		int max_iter=30;
+		int max_iter=1000;
 		int nro_grafo=1;
 		
 		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
 		//Cargo grafo desde archivo
 		//Graph G = new Graph("data/test_mor_"+nro_grafo);
-		Graph G = new Graph("data/Grafo_15_ci.stp");
+		Graph G = new Graph("data/c03.stp");
 		//G.export_to_file("data/salidas/G_"+nro_grafo+".txt");
-		G.export_to_file("data/salidas/Grafo_15_ci.stp.txt");
+		G.export_to_file("data/salidas/c03.stp.txt");
 
 		Graph BestSolutionFound = null;
 		
@@ -71,7 +71,7 @@ public class mor {
 
 			//comparo los costos de BestSolutionFound y LocalSolution			
 			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){	
-				InitialSolution.export_to_file("data/salidas/InitialSolution_Grafo_15_ci.stp.txt");			
+				InitialSolution.export_to_file("data/salidas/InitialSolution_c03.stp.txt");			
 				BestSolutionFound = LocalSolution.copy_of_graph();
 			}		
 			
@@ -283,7 +283,7 @@ public class mor {
 					//recorro caminos que devuelve el getkeypathfromgraph 
 					List<Path> pij = par_nodos_caminos.get(ij);
 					
-					Pair<Integer, Integer> prueba_ij_1 = new Pair<Integer, Integer>(7, 8);
+					/*Pair<Integer, Integer> prueba_ij_1 = new Pair<Integer, Integer>(7, 8);
 					List<BaseVertex> lista = new ArrayList<BaseVertex>();
 					BaseVertex p1 = new Vertex();
 					p1.set_id(7);
@@ -319,12 +319,13 @@ public class mor {
 					
 					if (ij.equals(prueba_ij_1) && paths_78.contains(prueba)){
 						System.out.println("");
-					}
+					}*/
 					
 					for (Path camino:pij){
 						if (camino.path_contains_path(p_techo)){							
 							P_ij.get(ij).remove(camino);
-							List<BaseVertex> vertices =  camino.get_vertices();							
+							List<BaseVertex> vertices =  camino.get_vertices();
+							List<BaseVertex> vertices_original = new ArrayList<BaseVertex>(camino.get_vertices()); //copia del camino original, usado si no deber realizarse finalmente la sustitucion
 							int indice = vertices.indexOf(u);
 							vertices.removeAll(p_techo.get_vertices());
 							if (indice>vertices.size()){
@@ -337,20 +338,25 @@ public class mor {
 							//luego de sustituir p_techo por p_barra. Si no hay ciclos se realiza la sustitución
 							//si no se sigue con la siguiente iteración.
 							Set<BaseVertex> set_vertices = new HashSet<BaseVertex>(vertices);
+							boolean realizar_sustitucion = true;
 					        for (BaseVertex vertex : set_vertices) {
 					            int cant_ocurrencias = Collections.frequency(vertices, vertex);
-					            if (cant_ocurrencias>0){
-					            	continue;
+					            if (cant_ocurrencias>1){
+					            	realizar_sustitucion = false;
 					            }
 					        }
-							camino.setVertexList(vertices);
+					        if (realizar_sustitucion){
+					        	camino.setVertexList(vertices);
+					        }else{
+					        	camino.setVertexList(vertices_original);
+					        }
 							P_ij.get(ij).add(camino);
 						}
 					}					
 
-					if (ij.equals(prueba_ij_1) && paths_78.contains(prueba)){ //robledo
+					/*if (ij.equals(prueba_ij_1) && paths_78.contains(prueba)){ //robledo
 						System.out.println("");
-					}
+					}*/
 				}				
 			}
 			max_iter--;
