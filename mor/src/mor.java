@@ -27,21 +27,18 @@ public class mor {
 		System.out.println("5: 4 nodos - 12 aristas - costos variables.");
 		System.out.println("6: 10 nodos - 90 aristas - costos variables.");
 		
-		System.out.println("\nIngrese el número del grafo:  ");
+		/*System.out.println("\nIngrese el número del grafo:  ");
 		System.out.print(">  ");
 		BufferedReader buffer_read = new BufferedReader(new InputStreamReader(System.in));
 		String nro_grafo = buffer_read.readLine();
 		
-		System.out.println("Nro. de iteraciones para GRASP:  ");
+		System.out.println("Nro. de iteraciones:  ");
 		System.out.print(">  ");
 		buffer_read = new BufferedReader(new InputStreamReader(System.in));
 
-		int max_iter_GRASP = Integer.parseInt(buffer_read.readLine());
-		
-		System.out.println("Nro. de iteraciones para la CI:  ");
-		System.out.print(">  ");
-		buffer_read = new BufferedReader(new InputStreamReader(System.in));
-		int max_iter_CI = Integer.parseInt(buffer_read.readLine());
+		int max_iter = Integer.parseInt(buffer_read.readLine());*/
+		int max_iter=30;
+		int nro_grafo=1;
 		
 		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
 		//Cargo grafo desde archivo
@@ -54,9 +51,9 @@ public class mor {
 		
 		long startTime = System.currentTimeMillis();
 		
-		for (int i=1; i<=max_iter_GRASP; i++){			
+		for (int i=1; i<=max_iter; i++){			
 			//System.out.println("Construyo soluciÃ³n inicial...");		
-			Graph InitialSolution = construir_solucion_inicial(G,max_iter_CI);
+			Graph InitialSolution = construir_solucion_inicial(G,max_iter);
 			if (InitialSolution==null) {
 				P_ij.clear();
 				continue;
@@ -67,12 +64,12 @@ public class mor {
 			}
 
 			//System.out.println("Iniciando bï¿½squeda local...");
-			Graph LocalSolution = busqueda_local(G, InitialSolution);
+			Graph LocalSolution = busqueda_local(G, InitialSolution,max_iter);
 			//LocalSolution.export_to_file("data/salidas/LocalSolution_"+nro_grafo+"_"+i+".txt");
 
 			//comparo los costos de BestSolutionFound y LocalSolution			
 			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){	
-				InitialSolution.export_to_file("data/salidas/InitialSolution_Grafo_15.stp.txt");			
+				InitialSolution.export_to_file("data/salidas/InitialSolution_Grafo_15_ci.stp.txt");			
 				BestSolutionFound = LocalSolution.copy_of_graph();
 			}		
 			
@@ -109,8 +106,6 @@ public class mor {
 		//seleccionar randomicamente i,j in TxT /mij>0
 		Pair<Integer,Integer> random_ij = get_random_ij(m_ij,T);
 
-		
-		int iter = 0;
 		while ((random_ij!=null)/*&& (iter<max_iter_CI)*/){ //mientras exista un (i,j) in TxT /mij>0
 			Graph H = G.copy_of_graph();
 			if (P_ij.get(random_ij)!=null){
@@ -187,7 +182,6 @@ public class mor {
 				return null;
 			}
 
-			iter++;
 			random_ij = get_random_ij(m_ij,T);
 		}		
 		return Gsol;
@@ -220,17 +214,16 @@ public class mor {
 		return null;		
 	}
 
-	private static Graph busqueda_local(Graph G, Graph InitialSolution){
+	private static Graph busqueda_local(Graph G, Graph InitialSolution, int max_iter){
 		Graph best_Gsol = InitialSolution.copy_of_graph();
 		Graph Gsol = InitialSolution.copy_of_graph();
-		int max_iter=50; //ROBLEDO MOR TO DO 
 
 		do{			
 			//Obtener keypath y la lista de caminos que lo contienen
 			Pair<Path,Map<Pair<Integer,Integer>,List<Path>>> lista_caminos_keypath = Gsol.getKeyPathFromGraph(P_ij, key_path_utilizados); //sigue devolviendo keypaths ya usados
 			if (lista_caminos_keypath!=null){
 				Path p_techo = lista_caminos_keypath.first();
-				if (p_techo.get_vertices().size()>2)
+				if (p_techo.get_vertices().size()==3)
 					System.out.println("");
 				key_path_utilizados.add(p_techo);
 				Map<Pair<Integer,Integer>,List<Path>> par_nodos_caminos = lista_caminos_keypath.second();
@@ -275,26 +268,75 @@ public class mor {
 				//obtener p_barra el camino mas corto de u a v en h techo
 				DijkstraShortestPathAlg dijkstra = new DijkstraShortestPathAlg(H_techo);
 				Path p_barra = dijkstra.get_shortest_path(u, v);
+				
+				if (p_barra.get_vertices().get(0)!=p_techo.get_vertices().get(0)){
+					p_barra = p_barra.invertirPath();
+				}
+				
 				Gsol_menos_p_techo = Gsol_menos_p_techo.grafo_mas_camino(p_barra, G);
 				Gsol = Gsol_menos_p_techo.copy_of_graph();
-				
 				
 				//Actualizar los Pij para todo ij perteneciente a x_p_techo
 				for (Pair<Integer,Integer> ij:Xp_techo){
 					//recorro caminos que devuelve el getkeypathfromgraph 
 					List<Path> pij = par_nodos_caminos.get(ij);
+					
+					Pair<Integer, Integer> prueba_ij_1 = new Pair<Integer, Integer>(7, 8);
+					List<BaseVertex> lista = new ArrayList<BaseVertex>();
+					BaseVertex p1 = new Vertex();
+					p1.set_id(7);
+					lista.add(p1);
+					p1 = new Vertex();
+					p1.set_id(0);
+					lista.add(p1);
+					p1 = new Vertex();
+					p1.set_id(1);
+					lista.add(p1);
+					p1 = new Vertex();
+					p1.set_id(4);
+					lista.add(p1);
+					p1 = new Vertex();
+					p1.set_id(5);
+					lista.add(p1);
+					p1 = new Vertex();
+					p1.set_id(4);
+					lista.add(p1);
+					p1 = new Vertex();
+					p1.set_id(2);
+					lista.add(p1);
+					p1 = new Vertex();
+					p1.set_id(3);
+					lista.add(p1);
+					p1 = new Vertex();
+					p1.set_id(8);
+					lista.add(p1);
+					Path prueba = new Path();
+					prueba.setVertexList(lista);
+					List<Path> paths_78 = P_ij.get(prueba_ij_1);
+							
+					
+					if (ij.equals(prueba_ij_1) && paths_78.contains(prueba)){
+						System.out.println("");
+					}
+					
 					for (Path camino:pij){
-						P_ij.get(ij).remove(camino);
-						List<BaseVertex> vertices =  camino.get_vertices();
-						int indice = vertices.indexOf(u);
-						vertices.removeAll(p_techo.get_vertices());
-						if (indice>vertices.size()){
-							vertices.addAll(p_barra.get_vertices());
-						}else {
-							vertices.addAll(indice, p_barra.get_vertices());
+						if (camino.path_contains_path(p_techo)){							
+							P_ij.get(ij).remove(camino);
+							List<BaseVertex> vertices =  camino.get_vertices();
+							int indice = vertices.indexOf(u);
+							vertices.removeAll(p_techo.get_vertices());
+							if (indice>vertices.size()){
+								vertices.addAll(p_barra.get_vertices());
+							}else {
+								vertices.addAll(indice, p_barra.get_vertices());
+							}
+							camino.setVertexList(vertices);
+							P_ij.get(ij).add(camino);
 						}
-						camino.setVertexList(vertices);
-						P_ij.get(ij).add(camino);
+					}					
+
+					if (ij.equals(prueba_ij_1) && paths_78.contains(prueba)){ //robledo
+						System.out.println("");
 					}
 				}				
 			}
