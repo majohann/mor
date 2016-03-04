@@ -22,12 +22,12 @@ public class mor {
 		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
 		
 		System.out.println("Grafos disponibles: ");
-		System.out.println("1: 7 nodos - 34 aristas - costos 1.");
-		System.out.println("2: 4 nodos - 12 aristas - costos 1.");
-		System.out.println("3: 10 nodos - 90 aristas - costos 1.");
+		System.out.println("1: berlin52.");
+		System.out.println("2: brasil58.");
+		/*System.out.println("3: 10 nodos - 90 aristas - costos 1.");
 		System.out.println("4: 7 nodos - 34 aristas - costos variables.");
 		System.out.println("5: 4 nodos - 12 aristas - costos variables.");
-		System.out.println("6: 10 nodos - 90 aristas - costos variables.");
+		System.out.println("6: 10 nodos - 90 aristas - costos variables.");*/
 		
 		/*System.out.println("\nIngrese el número del grafo:  ");
 		System.out.print(">  ");
@@ -39,15 +39,16 @@ public class mor {
 		buffer_read = new BufferedReader(new InputStreamReader(System.in));
 
 		int max_iter = Integer.parseInt(buffer_read.readLine());*/
-		int max_iter=1000;
+		int max_iter=30;
 		int nro_grafo=1;
 		
 		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
+		System.out.println("");
 		//Cargo grafo desde archivo
 		//Graph G = new Graph("data/test_mor_"+nro_grafo);
-		Graph G = new Graph("data/c03.stp");
+		Graph G = new Graph("data/brasil58.stp");
 		//G.export_to_file("data/salidas/G_"+nro_grafo+".txt");
-		G.export_to_file("data/salidas/c03.stp.txt");
+		G.export_to_file("data/salidas/brasil58.stp.txt");
 
 		Graph BestSolutionFound = null;
 		
@@ -62,8 +63,10 @@ public class mor {
 			}
 			//InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+"_"+i+".txt");	
 			if (BestSolutionFound==null){
-				BestSolutionFound = InitialSolution.copy_of_graph();
+				BestSolutionFound = InitialSolution.copy_of_graph();		
 			}
+			long middle_time = (System.currentTimeMillis() - startTime)/1000;
+			System.out.println(i+") Tiempo solución inicial: " + middle_time + "s.");
 
 			//System.out.println("Iniciando bï¿½squeda local...");
 			Graph LocalSolution = busqueda_local(G, InitialSolution,max_iter);
@@ -71,7 +74,7 @@ public class mor {
 
 			//comparo los costos de BestSolutionFound y LocalSolution			
 			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){	
-				InitialSolution.export_to_file("data/salidas/InitialSolution_c03.stp.txt");			
+				InitialSolution.export_to_file("data/salidas/InitialSolution_brasil58.stp.txt");			
 				BestSolutionFound = LocalSolution.copy_of_graph();
 			}		
 			
@@ -225,8 +228,8 @@ public class mor {
 			Pair<Path,Map<Pair<Integer,Integer>,List<Path>>> lista_caminos_keypath = Gsol.getKeyPathFromGraph(P_ij, key_path_utilizados); //sigue devolviendo keypaths ya usados
 			if (lista_caminos_keypath!=null){
 				Path p_techo = lista_caminos_keypath.first();
-				if (p_techo.get_vertices().size()==3)
-					System.out.println("");
+				/*if (p_techo.get_vertices().size()==3)
+					System.out.println("");*/
 				key_path_utilizados.add(p_techo);
 				Map<Pair<Integer,Integer>,List<Path>> par_nodos_caminos = lista_caminos_keypath.second();
 
