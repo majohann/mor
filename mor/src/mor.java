@@ -41,41 +41,45 @@ public class mor {
 		int max_iter = Integer.parseInt(buffer_read.readLine());*/
 		int max_iter=30;
 		int nro_grafo=1;
+		double costo_inicial=0;
+		double costo_best=0;
 		
 		System.out.println("Cargo grafo inicial número "+nro_grafo+"...");
 		System.out.println("");
 		//Cargo grafo desde archivo
 		//Graph G = new Graph("data/test_mor_"+nro_grafo);
-		Graph G = new Graph("data/brasil58.stp");
+		Graph G = new Graph("data/p4e100.stp");
 		//G.export_to_file("data/salidas/G_"+nro_grafo+".txt");
-		G.export_to_file("data/salidas/brasil58.stp.txt");
+		G.export_to_file("data/salidas/p4e100.stp.txt",0,0);
 
 		Graph BestSolutionFound = null;
 		
 		long startTime = System.currentTimeMillis();
 		
 		for (int i=1; i<=max_iter; i++){			
-			//System.out.println("Construyo soluciÃ³n inicial...");		
+			System.out.println("Construyo soluciÃ³n inicial...");		
 			Graph InitialSolution = construir_solucion_inicial(G,max_iter);
 			if (InitialSolution==null) {
 				P_ij.clear();
 				continue;
 			}
-			//InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+"_"+i+".txt");	
+			// InitialSolution.export_to_file("data/salidas/InitialSolution_"+nro_grafo+"_"+i+".txt",0,0);	
 			if (BestSolutionFound==null){
 				BestSolutionFound = InitialSolution.copy_of_graph();		
 			}
 			long middle_time = (System.currentTimeMillis() - startTime)/1000;
 			System.out.println(i+") Tiempo solución inicial: " + middle_time + "s.");
 
-			//System.out.println("Iniciando bï¿½squeda local...");
+			System.out.println("Iniciando bï¿½squeda local...");
 			Graph LocalSolution = busqueda_local(G, InitialSolution,max_iter);
 			//LocalSolution.export_to_file("data/salidas/LocalSolution_"+nro_grafo+"_"+i+".txt");
 
 			//comparo los costos de BestSolutionFound y LocalSolution			
 			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){	
-				InitialSolution.export_to_file("data/salidas/InitialSolution_brasil58.stp.txt");			
+				InitialSolution.export_to_file("data/salidas/InitialSolution_p4e100.stp.txt",0,0);
+				costo_inicial = InitialSolution.costo_grafo();
 				BestSolutionFound = LocalSolution.copy_of_graph();
+				costo_best = BestSolutionFound.costo_grafo();
 			}		
 			
 			P_ij.clear();
@@ -85,7 +89,7 @@ public class mor {
 		long totalTime = endTime - startTime; //debemos restarle los tiempos que produce generar los archivos
 		System.out.println("Tiempo de ejecución: " + totalTime + "ms.");
 		System.out.println("Fin.");	
-		BestSolutionFound.export_to_file("data/salidas/BestSolutionFound_"+nro_grafo+".txt");
+		BestSolutionFound.export_to_file("data/salidas/BestSolutionFound_"+nro_grafo+".txt",costo_inicial,costo_best);
 	}
 
 	private static Map<Pair<Integer,Integer>,List<Path>> P_ij = new HashMap<Pair<Integer,Integer>, List<Path>>();

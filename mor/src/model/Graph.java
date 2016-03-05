@@ -344,11 +344,16 @@ public class Graph implements BaseGraph
 	 * 
 	 * @param file_name
 	 */
-	public void export_to_file(final String file_name)
+	public void export_to_file(final String file_name, double costo_ini, double costo_best)
 	{
 		//1. prepare the text to export
 		StringBuffer sb = new StringBuffer();
-		sb.append(_vertex_num+"\n\n");
+		if (costo_ini ==0) {
+			sb.append("Cantidad de nodos:"+_vertex_num+"\n\n");	
+		}
+		else {
+			sb.append("Cantidad de nodos:"+_vertex_num+"\n\n"+"costo_ini:"+costo_ini+"costo_best:"+costo_best+ "\n\n");			
+		}
 		for(Pair<Integer, Integer> cur_edge_pair : _vertex_pair_weight_index.keySet())
 		{
 			int starting_pt_id = cur_edge_pair.first();
