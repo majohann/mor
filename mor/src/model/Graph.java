@@ -97,8 +97,8 @@ public class Graph implements BaseGraph
 	 */
 	public Graph(final String data_file_name)
 	{
-		//import_from_file(data_file_name);
-		import_from_file_pruebas(data_file_name);
+		import_from_file(data_file_name);
+		//import_from_file_pruebas(data_file_name);
 	}
 
 	/**
