@@ -333,9 +333,6 @@ public class Graph implements BaseGraph
 				new Pair<Integer, Integer>(start_vertex_id, end_vertex_id), 
 				weight);
 
-		//Inicializo mij=3
-		/*_vertex_pair_mij_index.put(new Pair<Integer, Integer>(start_vertex_id, end_vertex_id), 
-				3);*/
 		++_edge_num;
 	}
 
