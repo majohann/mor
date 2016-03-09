@@ -95,10 +95,12 @@ public class Graph implements BaseGraph
 	 * Constructor 1 
 	 * @param data_file_name
 	 */
-	public Graph(final String data_file_name)
+	public Graph(final String data_file_name, boolean use_parser)
 	{
-		import_from_file(data_file_name);
-		//import_from_file_pruebas(data_file_name);
+		if (use_parser)
+			import_from_file_pruebas(data_file_name);
+		else
+			import_from_file(data_file_name);
 	}
 
 	/**

@@ -62,7 +62,7 @@ public class VariableGraph extends Graph
 	 */
 	public VariableGraph(String data_file_name)
 	{
-		super(data_file_name);
+		super(data_file_name,false);
 	}
 	
 	/**

@@ -22,7 +22,7 @@ public class mor {
 		System.out.println("Metaheurísticas y Optimización sobre Redes - 2015\n");
 
 		System.out.println("Los grafos disponibles son los ejecutados en las pruebas detalladas en el informe.");
-		System.out.println("Ingrese el número del caso a ejecutar: ");
+		System.out.println("Grafos disponbles: ");
 		System.out.println("1: caso1.");
 		System.out.println("2: caso2.");
 		System.out.println("3: caso3.");
@@ -32,34 +32,57 @@ public class mor {
 		System.out.println("7: caso6.");
 		System.out.println("8: berlin52.");
 		System.out.println("9: brasil58.");
-
+		System.out.println("Ingrese el número del caso a ejecutar: ");
 		System.out.print(">  ");
 		BufferedReader buffer_read = new BufferedReader(new InputStreamReader(System.in));
 		String grafo_seleccionado = buffer_read.readLine();
-
+		while ((Integer.parseInt(grafo_seleccionado)<=0)||(Integer.parseInt(grafo_seleccionado)>9)){
+			System.out.println("Número de grafo incorrecto. Ingrese el número nuevamente:");
+			System.out.print(">  ");
+			buffer_read = new BufferedReader(new InputStreamReader(System.in));
+			grafo_seleccionado = buffer_read.readLine();
+		}
 		System.out.println("Nro. de iteraciones:  ");
 		System.out.print(">  ");
 		buffer_read = new BufferedReader(new InputStreamReader(System.in));
-
-		int max_iter = Integer.parseInt(buffer_read.readLine());		
+		
+		int max_iter;
+		try {
+			max_iter= Integer.parseInt(buffer_read.readLine());
+		}catch (Exception e){
+			max_iter=-1;
+		}
+		while (max_iter<=0){
+			System.out.println("Número de iteraciones incorrecta. Ingrese nuevamente el valor:");
+			System.out.print(">  ");
+			buffer_read = new BufferedReader(new InputStreamReader(System.in));
+			try {
+				max_iter= Integer.parseInt(buffer_read.readLine());
+			}catch (Exception e){
+				max_iter=-1;
+			}
+		}				
 
 		double costo_inicial=0;
 		double costo_best=0;
 
 		System.out.println("Cargo grafo inicial número "+grafo_seleccionado+"...");
 		System.out.println("");
+		
+		boolean use_parser = true;
 		//Cargo grafo desde archivo
 		if (grafo_seleccionado.equals("8")){
-			grafo_seleccionado = "berlin52.stp";
+			grafo_seleccionado = "berlin52.stp";			
 		}else if (grafo_seleccionado.equals("9")){
 			grafo_seleccionado = "brasil58.stp";
 		}else if (grafo_seleccionado.equals("7")){
 			grafo_seleccionado = "p4e100.stp";
 		}else{
 			grafo_seleccionado = "caso"+grafo_seleccionado;
+			use_parser = false;
 		}
 		
-		Graph G = new Graph("data/"+grafo_seleccionado);		
+		Graph G = new Graph("data/"+grafo_seleccionado, use_parser);		
 		G.export_to_file("data/salidas/"+grafo_seleccionado+"-"+max_iter+"iter.txt",0,0);
 
 		Graph BestSolutionFound = null;
@@ -67,7 +90,7 @@ public class mor {
 		long startTime = System.currentTimeMillis();
 
 		for (int i=1; i<=max_iter; i++){			
-			System.out.println("Construyo solución inicial...");		
+			System.out.println("Construyendo solución inicial...");		
 			Graph InitialSolution = construir_solucion_inicial(G,max_iter);
 			if (InitialSolution==null) {
 				P_ij.clear();
