@@ -90,7 +90,7 @@ public class mor {
 		long startTime = System.currentTimeMillis();
 
 		for (int i=1; i<=max_iter; i++){			
-			System.out.println("Construyendo solución inicial...");		
+			System.out.println("Iteración "+i+") Construyendo solución inicial...");		
 			Graph InitialSolution = construir_solucion_inicial(G,max_iter);
 			if (InitialSolution==null) {
 				P_ij.clear();
@@ -100,12 +100,17 @@ public class mor {
 				BestSolutionFound = InitialSolution.copy_of_graph();	
 				InitialSolution.export_to_file("data/salidas/InitialSolution_"+grafo_seleccionado+grafo_seleccionado+"-"+max_iter+"iter.txt",0,0);
 			}
-			long middle_time = (System.currentTimeMillis() - startTime)/1000;
-			System.out.println(i+") Tiempo solución inicial: " + middle_time + "s.");
+			long middle_time = (System.currentTimeMillis() - startTime);
+			System.out.println("Iteración "+i+") Tiempo fin solución inicial: " + middle_time + "ms.");
 
-			System.out.println("Iniciando búsqueda local...");
+			System.out.println("Iteración "+i+") Iniciando búsqueda local...");
 			Graph LocalSolution = busqueda_local(G, InitialSolution,max_iter);
+			
+			long middle_time_BL = (System.currentTimeMillis() - middle_time-startTime);
+			System.out.println("Iteración "+i+") Tiempo fin búsqueda local: " + middle_time_BL + "ms.");
 
+			
+			System.out.println();
 			//comparo los costos de BestSolutionFound y LocalSolution			
 			if (LocalSolution.costo_grafo()<BestSolutionFound.costo_grafo()){	
 				InitialSolution.export_to_file("data/salidas/InitialSolution_"+grafo_seleccionado+grafo_seleccionado+"-"+max_iter+"iter.txt",0,0);
@@ -119,7 +124,7 @@ public class mor {
 		long endTime = System.currentTimeMillis();
 
 		long totalTime = endTime - startTime; //debemos restarle los tiempos que produce generar los archivos
-		System.out.println("Tiempo de ejecución: " + totalTime + "ms.");
+		System.out.println("Tiempo total de ejecución: " + totalTime + "ms.");
 		System.out.println("Fin.");	
 		BestSolutionFound.export_to_file("data/salidas/BestSolutionFound_"+grafo_seleccionado+grafo_seleccionado+"-"+max_iter+"iter.txt",costo_inicial,costo_best);
 	}
@@ -243,7 +248,7 @@ public class mor {
 			}
 			return pair;
 		}else {
-			System.out.println("No hay más mij!!! :)");
+			//System.out.println("No hay más mij!!! :)");
 		}
 		return null;		
 	}
