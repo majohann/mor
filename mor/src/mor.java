@@ -126,7 +126,7 @@ public class mor {
 		long totalTime = endTime - startTime; //debemos restarle los tiempos que produce generar los archivos
 		System.out.println("Tiempo total de ejecución: " + totalTime + "ms.");
 		System.out.println("Fin.");	
-		BestSolutionFound.export_to_file("data/salidas/BestSolutionFound_"+grafo_seleccionado+grafo_seleccionado+"-"+max_iter+"iter.txt",costo_inicial,costo_best);
+		BestSolutionFound.export_to_file("data/salidas/BestSolutionFound_"+grafo_seleccionado+"-"+max_iter+"iter.txt",costo_inicial,costo_best);
 	}
 
 	private static Map<Pair<Integer,Integer>,List<Path>> P_ij = new HashMap<Pair<Integer,Integer>, List<Path>>();
